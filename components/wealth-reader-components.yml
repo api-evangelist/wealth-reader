@@ -1,0 +1,117 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  https://www.wealthreader.com/docs/en/iframe-integration-1-of-2-frontend.md ;
+  https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend.md ;
+  https://www.wealthreader.com/docs/en/introduction.md ;
+  https://www.wealthreader.com/docs/en/oauth-integration-backend.md
+summary: >-
+  The widget IS the product's primary integration path — "most web clients use the iframe" — and it
+  matters more here than a component library normally would, because it is what keeps the
+  integrator out of scope for handling raw bank credentials. The integrator never sees a password;
+  the widget renders the per-institution credential form, drives consent and second factors, and
+  hands back a token.
+families:
+- name: Bank connection widget
+  type: hosted iframe
+  loader: https://widget.wealthreader.com/js/load.js
+  origin: https://widget.wealthreader.com
+  demo: https://widget.wealthreader.com/demo-all/
+  mount: >-
+    An <iframe id="wr-iframe"> the loader finds by id and sizes from the viewport. Give it vertical
+    room; placed mid-page it can be clipped.
+  configuration_object: wr_conf
+  prerequisite: >-
+    The serving domain must be authorised in the client area (https://www.wealthreader.com/clients/)
+    BEFORE the widget is opened, or it reports that the domain is not authorised.
+  config:
+  - name: operation_id
+    required: true
+    default: null
+    description: >-
+      Integrator-generated id (the provider's example uses crypto.randomUUID). It comes back in the
+      backend callback and is the only bridge between the browser operation and the server payload.
+  - name: entities_to_display
+    required: false
+    default: all institutions on the api_key
+    description: Array of institution codes. Empty or omitted shows everything.
+  - name: wait_full_response
+    required: false
+    default: true
+    description: >-
+      true returns products and transactions; false returns the product list only, which is faster
+      but drops transactions. The provider says to leave it on.
+  - name: date_from
+    required: false
+    default: yesterday
+    description: Start of transactions, YYYY-MM-DD. Only applies when wait_full_response is true.
+  - name: product_types
+    required: false
+    default: those licensed on the api_key
+  - name: default_login
+    required: false
+    description: Institution code; opens that institution's form directly.
+  - name: default_login_entity_country
+    required: false
+    default: ES
+  - name: token
+    required: false
+    description: Re-authentication — preselects the bank of a token that is no longer valid.
+  - name: psd2
+    required: false
+    default: true
+  - name: nonpsd2
+    required: false
+    default: true
+    description: Show institutions on the non-PSD2 channel, which returns richer data.
+  - name: language
+    required: false
+    default: browser language
+    values: [es, en]
+  - name: tokenize
+    required: false
+    default: the client-area setting
+    description: true to receive a reusable token in the callback.
+  - name: business_account
+    required: false
+    default: true
+  - name: personal_account
+    required: false
+    default: true
+  events:
+    mechanism: window postMessage
+    origin_check: 'Always verify event.origin === "https://widget.wealthreader.com"'
+    messages:
+    - data: '"flow completed"'
+      when: The read succeeded AND the integrator's callback returned 200 with {"status":"ok"}
+      contains_bank_data: false
+      action: Close the selector or show the success screen.
+    - data: JSON with an error object
+      when: The flow is mid-2FA, needs a contract selection, or failed
+      action: Read error.code and error.message. The callback has not been sent.
+- name: OAuth redirect flow
+  type: hosted redirect
+  authorization_endpoint: https://oauth.wealthreader.com/oauth2/
+  token_endpoint: https://oauth.wealthreader.com/token/
+  when: Native apps, or any integrator that cannot embed an iframe.
+  configuration_object: wr_conf, JSON hex-encoded into the query string
+  note: Accepts the same wr_conf fields as the iframe. See authentication/ for the PKCE deviations.
+- name: Interactive API reference
+  type: hosted documentation UI
+  url: https://www.wealthreader.com/api-reference/en/
+  renderer: Redoc
+  languages: 17 (language picker at https://www.wealthreader.com/api-reference/)
+  note: Rendered from api.yaml's x-i18n blocks — the translations are in the specification itself.
+- name: Client area
+  type: hosted console
+  url: https://www.wealthreader.com/clients/
+  purpose: >-
+    Authorise widget domains, set the callback URL, choose iframe vs OAuth access type, toggle
+    tokenisation, and test domains. Several operations have no API equivalent — there is no
+    removeDomain — so this console is load-bearing, not optional.
+- name: Open Sync mobile app
+  type: first-party mobile application
+  purpose: >-
+    Captures real-time card expenses for enrolled employees and feeds the card_transaction.created
+    webhook. Employees confirm a pre-registered email in the app (POST /user-sync-validation/).
+  note: Named in the Cards (real time) tag description in the OpenAPI. Not a developer component.

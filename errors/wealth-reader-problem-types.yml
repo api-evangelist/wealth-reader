@@ -1,0 +1,382 @@
+generated: '2026-09-03'
+method: probed
+source: https://api.wealthreader.com/error-codes/?lang=en and https://api.wealthreader.com/warning-codes/?lang=en
+  (both HTTP 200, fetched 2026-09-03); cross-read against https://github.com/Wealth-Reader/wealthreader-api-docs/blob/main/api-reference/error-codes.md
+format: custom
+format_note: 'NOT RFC 9457. Every response carries the same envelope: {success: bool, payload: [...],
+  error: {code, message}, statistics: {SESSION, execution_time, warnings[]}}. The media type is application/json,
+  never application/problem+json. The HTTP status is a poor signal here — a failed read commonly returns
+  HTTP 200 with success:false and an error.code; the machine-readable decision lives in error.code and
+  its `fatal` flag, not in the status line.'
+envelope:
+  success: boolean
+  error.code: integer
+  error.message: localized string (?lang=en for English, Spanish by default)
+  statistics.SESSION: session id — always store it; support cannot reproduce a case without it
+  statistics.warnings: array of non-fatal warning objects, see warning_codes below
+retry_rule: '`fatal: true` means the call will fail again with the same input — surface it and stop. For
+  credential errors, retrying walks the end user towards a locked account at their bank. `fatal: false`
+  is transient: back off and retry, or let the next scheduled run pick it up.'
+http_statuses_declared:
+- '200'
+- '202'
+- '400'
+- '401'
+- '404'
+- '409'
+- '429'
+- '500'
+error_code_count: 40
+fatal_count: 18
+error_codes:
+- code: 1
+  title: Generic error
+  fatal: false
+  cause: An error not covered by the other error codes
+  remediation: Open a ticket stating the value of statistics.SESSION
+- code: 2
+  title: Incorrect call
+  fatal: false
+  cause: Some of the required parameters were not sent, were sent in an incorrect format, a usage limit
+    has been exceeded, or a product type not allowed by the license has been requested
+  remediation: The text received in "message" will detail the reason for the error. For example, "The
+    parameter 'api_key' is required"
+- code: 3
+  title: Blocked token
+  fatal: true
+  cause: The token has been blocked, due to a fatal error (For example, invalid credentials, when the
+    user has changed them)
+  remediation: You must generate a new token
+- code: 4
+  title: Temporarily invalid token
+  fatal: false
+  cause: A two-factor challenge or a temporary error requires generating a new token, but it is not a
+    definitive failure
+  remediation: Wait a few minutes or resolve the challenge (for example, an OTP code), and try again.
+    Generate a new token if necessary
+- code: 1000
+  title: Error getting data obtained from entity
+  fatal: false
+  cause: The entity has changed its structure
+  remediation: Open a ticket indicating the value of statistics.SESSION
+- code: 1001
+  title: Error formatting data obtained from entity
+  fatal: false
+  cause: The entity has changed its structure
+  remediation: Open a ticket indicating the value of statistics.SESSION
+- code: 2000
+  title: Login incorrect
+  fatal: true
+  cause: Some of the login data is incorrect
+  remediation: If this is an interactive login, ask the user to correct the error. If the error is obtained
+    in a batch, mark that user as invalid so as not to retry the login and cause the user's credentials
+    to be blocked in the entity
+- code: 2001
+  title: User blocked
+  fatal: true
+  cause: User is locked out
+  remediation: If this is an interactive login, ask the user to unlock the user in their online banking.
+    If the error is obtained in a batch, mark that user as invalid so as not to retry the login
+- code: 2002
+  title: User not accessible
+  fatal: false
+  cause: The login data is correct, but the user does not have access to the data because it is pending
+    activation
+  remediation: 'The text received in "message" will detail the reason why the user cannot access: he must
+    update his ID, must sign some document, etc'
+- code: 2003
+  title: The client does not have the contracted product
+  fatal: false
+  cause: This will happen when the client provides valid login credentials but does not have the product
+    requested contracted. This message will be received instead of an empty payload to distinguish it
+    from a potential error.
+  remediation: The text received in "message" will inform the client that they do not have the product
+    requested contracted, so they can take appropriate action.
+- code: 2004
+  title: Error in logging into the entity, offer an alternative connection method, after which the user
+    must wait 24 business hours before attempting the connection again.
+  fatal: true
+  cause: This will occur when the primary connection to the required banking entity fails.
+  remediation: The user should connect using the alternative method, wait for 24 business hours, and then
+    make a new connection attempt.
+- code: 2005
+  title: There is already an active session for this user. Try again later.
+  fatal: false
+  cause: This error occurs when simultaneous connections are detected for the same user in our API. To
+    avoid conflicts, the API blocks multiple parallel connections.
+  remediation: Wait for the current active session to end before trying to connect again. If you cannot
+    verify the session status, retry the connection at time intervals, such as every 5 minutes.
+- code: 2010
+  title: OTP (One Time Password) two-factor challenge
+  fatal: false
+  cause: The entity requires a second authentication factor
+  remediation: If this is an interactive login, ask the user to enter the code received on his device.
+    If the error is obtained in a batch, mark that user as invalid so as not to retry the login in the
+    following days
+- code: 20101
+  title: OTP (One Time Password) two-factor challenge
+  fatal: true
+  cause: The entity requires a second authentication factor
+  remediation: Ask the user to reauthenticate to revalidate the token.
+- code: 2011
+  title: Push type two-factor challenge
+  fatal: false
+  cause: Entity requires second factor authentication
+  remediation: If this is an interactive login, ask the user to enter the code received on their device.
+    If the error is obtained in a batch, mark that user as invalid so as not to retry the login in the
+    following days
+- code: 20111
+  title: Push type two-factor challenge
+  fatal: true
+  cause: Entity requires second factor authentication
+  remediation: Ask the user to reauthenticate to revalidate the token.
+- code: 2012
+  title: Push notification not yet received
+  fatal: true
+  cause: The user has not yet accepted the login request received on his device
+  remediation: Ask the user to accept the login request received on their device
+- code: 2013
+  title: OTP (One Time Password) two-factor challenge, scan the image with the mobile application, and
+    enter the code.
+  fatal: false
+  cause: The entity requires a second authentication factor
+  remediation: If this is an interactive login, ask the user to enter the code received on his device.
+    If the error is obtained in a batch, mark that user as invalid so as not to retry the login in the
+    following days
+- code: 20131
+  title: OTP (One Time Password) two-factor challenge, scan the image with the mobile application, and
+    enter the code.
+  fatal: true
+  cause: The entity requires a second authentication factor
+  remediation: Ask the user to reauthenticate to revalidate the token.
+- code: 2014
+  title: Push type two-factor challenge, scan the image with the mobile application, accept the notification,
+    and continue.
+  fatal: false
+  cause: Entity requires second factor authentication
+  remediation: If this is an interactive login, ask the user to enter the code received on their device.
+    If the error is obtained in a batch, mark that user as invalid so as not to retry the login in the
+    following days
+- code: 20141
+  title: Push type two-factor challenge, scan the image with the mobile application, accept the notification,
+    and continue.
+  fatal: true
+  cause: Entity requires second factor authentication
+  remediation: Ask the user to reauthenticate to revalidate the token.
+- code: 2015
+  title: Two-factor challenge not completed on time
+  fatal: true
+  cause: A second API call has been sent after a two-factor challenge from the entity, exceeding the maximum
+    time set by the entity to complete it
+  remediation: Ask the user to start the login process again
+- code: 2016
+  title: Push notification and/or OTP code
+  fatal: false
+  cause: Entity prompts the user to press PUSH on the APP or enter an OTP code
+  remediation: Ask the user to accept the login request received on their device or enter the OTP code
+    received
+- code: 20161
+  title: Push notification and/or OTP code
+  fatal: true
+  cause: Entity prompts the user to press PUSH on the APP or enter an OTP code
+  remediation: Ask the user to accept the login request received on their device or enter the OTP code
+    received
+- code: 2017
+  title: Two-factor method selection
+  fatal: false
+  cause: The entity offers multiple two-factor methods and the user must select one
+  remediation: Ask the user to select a two-factor method
+- code: 20171
+  title: Two-factor method selection
+  fatal: true
+  cause: The entity offers multiple two-factor methods and the user must select one
+  remediation: Ask the user to select a two-factor method
+- code: 2018
+  title: Selected two-factor method does not exist
+  fatal: true
+  cause: The entity offers multiple two-factor methods and the user must select one, but the selected
+    method does not exist
+  remediation: Ask the user to select an existing two-factor method
+- code: 2019
+  title: URL type two-factor
+  fatal: false
+  cause: The entity requires a second authentication factor, you will receive a message to your associated
+    device, with a URL to complete the process
+  remediation: Ask the user to copy the link received, without using it, and send it as OTP
+- code: 20191
+  title: URL type two-factor
+  fatal: true
+  cause: The entity requires a second authentication factor, you will receive a message to your associated
+    device, with a URL to complete the process
+  remediation: Ask the user to copy the link received, without using it, and send it as OTP
+- code: 2020
+  title: Multi-contract user. The error code will be accompanied by a contract_names object with the available
+    contracts, the structure of which is described in the models in the documentation
+  fatal: true
+  cause: The login credentials are correct, but the user has more than one contract and must select one.
+    This is common for users managing company accounts
+  remediation: You need to specify a value for contract_name in the API call
+- code: 2030
+  title: Script type two-factor challenge, may require extension installation
+  fatal: true
+  cause: The entity requires a second authentication factor with code interpretation in the client's browser.
+  remediation: Ask the user to install the required extension and follow the instructions through the
+    integration widget.
+- code: 2050
+  title: Image captcha challenge
+  fatal: false
+  cause: The entity requires the user to manually input a code from an image captcha.
+  remediation: Ask the user to solve the image captcha and input the code as instructed.
+- code: 2051
+  title: Coordinate-based captcha challenge
+  fatal: false
+  cause: The entity requires the user to select specific coordinates in an image as part of the authentication
+    process.
+  remediation: Ask the user to select the correct coordinates in the image as instructed.
+- code: 2052
+  title: Puzzle captcha challenge
+  fatal: false
+  cause: The entity requires the user to complete a puzzle to verify authentication.
+  remediation: Ask the user to solve the puzzle challenge as instructed.
+- code: 2053
+  title: Audio captcha challenge
+  fatal: false
+  cause: The entity requires the user to listen to an audio file and input the spoken code.
+  remediation: Ask the user to listen to the audio and enter the correct code as instructed.
+- code: 2070
+  title: OAuth authentication is required
+  fatal: true
+  cause: The entity requires the user to complete the OAuth flow to proceed
+  remediation: Redirect the user to the OAuth flow and obtain the corresponding token
+- code: 3000
+  title: Entity under maintenance
+  fatal: false
+  cause: The entity's online access is under maintenance
+  remediation: This is a known, temporary problem. Please retry after a few minutes
+- code: 3001
+  title: Execution time exceeded
+  fatal: false
+  cause: Server down or delayed
+  remediation: This is a known, temporary problem. Please retry after a few minutes
+- code: 3002
+  title: Connection with the entity is under maintenance.
+  fatal: false
+  cause: The entity is performing maintenance tasks on its online banking system, or has made changes
+    to its data structure. We are in the process of adjusting it.
+  remediation: This is a known, temporary problem. Please retry after 24 business hours.
+- code: 9999
+  title: Token invalidated by client request
+  fatal: true
+  cause: The client has invalidated this token with the API's informed method (Manual)
+  remediation: The client must generate a new token
+warning_code_count: 14
+warning_note: 'Warnings arrive in statistics.warnings on a SUCCESSFUL read: success stays true and the
+  payload stays usable. Treat them as partial-coverage notices; do not fail the operation because one
+  is present. Each carries a priority (1 highest).'
+warning_codes:
+- code: 2
+  title: Incorrect call
+  cause: One of the required parameters was not sent or was sent in an incorrect format
+  remediation: The text received in "message" will detail the reason for the error. For example, "The
+    parameter "api_key" is required".
+  priority: 1
+- code: 10
+  title: Information about the type of access
+  cause: The entity has different access channels and it is necessary to know them to provide better support
+  remediation: It is an informational message, no action is required
+  priority: 3
+- code: 1050
+  title: No information from a set of main products has been recovered.
+  cause: The entity has responded with an unexpected format, or the user does not have permission to view
+    it.
+  remediation: Open a ticket indicating the value of statistics.SESSION
+  priority: 1
+- code: 1051
+  title: No information from a set of main products has been recovered, but it is an expected error. The
+    information is not available for this user.
+  cause: The entity does not allow retrieving information from a certain set of products.
+  remediation: Notify the user.
+  priority: 2
+- code: 1052
+  title: No information from one of the products in a main category has been recovered.
+  cause: The entity has responded with an unexpected format, or the user does not have permission to view
+    it.
+  remediation: Analyze if the client can view this product normally in their online banking, and if so,
+    open a ticket indicating the value of statistics.SESSION
+  priority: 1
+- code: 1053
+  title: No information from one of the products in a main category has been recovered, but it is an expected
+    error. The information is not available for this user.
+  cause: The entity does not allow retrieving information from a certain product.
+  remediation: Notify the user.
+  priority: 2
+- code: 1054
+  title: No essential information from a product has been recovered.
+  cause: The entity has responded with an unexpected format, or the user does not have permission to view
+    it.
+  remediation: Open a ticket indicating the value of statistics.SESSION
+  priority: 1
+- code: 1055
+  title: No optional information from a product has been recovered.
+  cause: The entity has responded with an unexpected format, does not deliver this data in general, or
+    the user does not have permission to view it.
+  remediation: Analyze if the client can view this data normally in their online banking, and if so, open
+    a ticket indicating the value of statistics.SESSION
+  priority: 3
+- code: 1056
+  title: No essential information from a product has been recovered, but it is an expected error. The
+    information is not available for this user.
+  cause: The entity does not allow retrieving information from a certain product.
+  remediation: Notify the user.
+  priority: 2
+- code: 1057
+  title: No information from a list of components of a product (e.g., Transactions or Composition) has
+    been recovered.
+  cause: The entity has responded with an unexpected format.
+  remediation: Open a ticket indicating the value of statistics.SESSION
+  priority: 1
+- code: 1058
+  title: No information from a list of components of a product (e.g., Transactions or Composition) has
+    been recovered, but it is an expected error. The information is not available for this user or in
+    this entity.
+  cause: The entity does not allow retrieving information from a certain list of components.
+  remediation: Notify the user.
+  priority: 2
+- code: 1059
+  title: No essential information from a list of components of a product (e.g., Transactions or Composition)
+    has been recovered.
+  cause: The entity has responded with an unexpected format.
+  remediation: Open a ticket indicating the value of statistics.SESSION
+  priority: 1
+- code: 1060
+  title: No optional information from a list of components of a product (e.g., Transactions or Composition)
+    has been recovered.
+  cause: The entity has responded with an unexpected format, does not deliver this data in general, or
+    the user does not have permission to view it.
+  remediation: Analyze if the client can view this data normally in their online banking, and if so, open
+    a ticket indicating the value of statistics.SESSION
+  priority: 3
+- code: 1061
+  title: No essential information from a list of components of a product (e.g., Transactions or Composition)
+    has been recovered, but it is an expected error. The information is not available for this user.
+  cause: The entity does not allow retrieving this data from a certain list of components.
+  remediation: Notify the user.
+  priority: 2
+string_codes:
+- code: rate_limited
+  http: 429
+  operation: cardsEnrollmentsCreate
+  meaning: More than 60 calls to POST /cards/enrollments/ for this api_key in 60 seconds.
+- code: invalid_email
+  http: 400
+  operation: cardsEnrollmentsCreate
+  meaning: email or ttl_minutes failed validation.
+- code: blocked_host
+  http: null
+  operation: cards webhook delivery
+  meaning: The registered webhook_url resolved to a private, loopback, link-local, CGNAT, multicast or
+    reserved address at delivery time (DNS rebinding check). Recorded as the delivery response_excerpt;
+    the delivery is closed as failed.
+note: The Cards (real time) tag uses a SECOND, incompatible error shape — string codes such as rate_limited
+  and invalid_email in a {success, code, message} body with a real HTTP status — while the rest of the
+  API uses integer codes in the {success, error:{code,message}} envelope. A client has to handle both.

@@ -1,0 +1,77 @@
+generated: '2026-09-03'
+method: derived
+source: mcp/wealth-reader-mcp.yml + openapi/wealth-reader-api-for-ai.yaml
+note: >-
+  THE HEADLINE FINDING IS THE EMPTY CROSSWALK. Wealth Reader ships both an OpenAPI and an MCP
+  server, but they describe two different products: the OpenAPI is the bank-aggregation API at
+  api.wealthreader.com, and the MCP server operates migration workflows on ALL WR (allwr.io).
+  Not one MCP tool binds to an operation in the spec, and not one of the 18 operations is
+  reachable from an agent over MCP. An agent that wants to read a portfolio must call the REST
+  API directly.
+surfaces:
+  openapi: openapi/wealth-reader-api-for-ai.yaml
+  openapi_servers: https://api.wealthreader.com/
+  graphql: null
+  mcp: 'stdio only (allwr-toolkit mcp serve) — no URL; not gated, simply not hosted'
+  gated:
+  - 'MCP inputSchema values: need a local install; no anonymous tools/list is possible over stdio'
+crosswalk: []
+mcp_only:
+- tool: list_connectors
+  reason: ALL WR migration toolkit; no public REST operation in the Wealth Reader API spec
+- tool: describe_connector
+  reason: ALL WR migration toolkit; no public REST operation in the Wealth Reader API spec
+- tool: validate_config
+  reason: local config validation; no API operation at all
+- tool: inspect_source
+  reason: reads Asana/Freshdesk, not Wealth Reader
+- tool: generate_plan
+  reason: local planning; writes only a plan file
+- tool: inspect_plan
+  reason: local plan file read
+- tool: migration_status
+  reason: reads the toolkit's local SQLite checkpoint state
+- tool: migration_report
+  reason: local report bundle generation
+- tool: apply_plan
+  reason: writes to the ALL WR Tasks import-mode API, which has no published OpenAPI
+- tool: resume_migration
+  reason: writes to the ALL WR Tasks import-mode API, which has no published OpenAPI
+- tool: cancel_migration
+  reason: operates the toolkit's own run state
+rest_only:
+- operation: 'POST /entities/'
+  note: no operationId in the spec; the primary read — accounts, cards, loans, deposits, portfolios
+- operation: getEntities
+- operation: 'GET /entities/category-types/'
+  note: no operationId in the spec
+- operation: queryTokensByApiKey
+- operation: revokeToken
+- operation: reasignToken
+- operation: addDomain
+- operation: 'GET /error-codes/'
+  note: no operationId in the spec
+- operation: 'GET /warning-codes/'
+  note: no operationId in the spec
+- operation: 'POST /verify/iban-ownership/'
+  note: no operationId in the spec; marked x-internal true
+- operation: registerUser
+- operation: checkUser
+- operation: revokeUser
+- operation: 'POST /batch/load/'
+  note: no operationId; requires a dedicated environment, not available on api.wealthreader.com
+- operation: 'POST /batch/fetch/statistics/'
+  note: no operationId in the spec
+- operation: 'POST /batch/fetch/connection-result/'
+  note: no operationId in the spec
+- operation: cardsWebhookRegister
+- operation: cardsEnrollmentsCreate
+- operation: cardsEnrollmentsStatus
+- operation: cardsTransactionsList
+coverage:
+  mcp_tools: 11
+  rest_operations: 20
+  bound: 0
+  mcp_only: 11
+  rest_only: 20
+  bound_pct: 0

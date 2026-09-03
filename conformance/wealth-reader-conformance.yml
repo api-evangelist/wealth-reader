@@ -1,0 +1,191 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml ; https://www.wealthreader.com/en/pricing/ ;
+  https://www.wealthreader.com/en/about-wealth-reader/ ;
+  https://github.com/Wealth-Reader/wealthreader-api-docs/blob/main/api-reference/institutions.md ;
+  live probes of /.well-known/ on www.wealthreader.com and api.wealthreader.com (all 404)
+sector: financial-services / open-banking (AISP)
+jurisdiction: ES / EU
+conformance:
+- id: psd2
+  conforms: true
+  evidence: >-
+    Wealth Reader is authorised by the Banco de España to provide the account information service
+    (AIS) under PSD2 — stated on https://www.wealthreader.com/en/about-wealth-reader/ ("a company
+    authorised by the Bank of Spain to provide the account information service (AIS PSD2)") and
+    repeated on the pricing page as "Regulated by the Bank of Spain". The API is read-only and
+    never initiates payments, which is exactly the AISP scope.
+  role: AISP (account information service provider)
+  note: >-
+    PSD2 is a channel here, not the whole product. The company's differentiator is the SECOND,
+    non-PSD2 channel that returns wealth data the regulatory APIs do not expose — investment
+    portfolio composition, ISIN and DGS codes, insurance, leases.
+- id: psd2-channel-declared-in-contract
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    The institution catalogue served at GET https://api.wealthreader.com/entities/ carries a
+    per-institution `psd2` field — "1" regulatory PSD2 channel, "0" non-PSD2 channel — and the
+    widget accepts `psd2` and `nonpsd2` booleans to filter the selector by channel. The regulatory
+    regime is therefore a first-class, machine-readable attribute of every institution in the
+    contract, not a claim on a marketing page. A consumer can tell, per bank, which legal channel
+    the data came over before requesting it.
+  spec_location: 'GET /entities/ response, per-entity `psd2` property; wr_conf psd2 / nonpsd2 flags'
+- id: iso-6166-isin
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    ISIN is a declared property on the portfolio composition schemas in the published OpenAPI —
+    portfolio_composition_funds_item, portfolio_composition_stocks_item,
+    portfolio_composition_pension_plans_item and portfolio_composition_bonds_item each carry an
+    `ISIN` field described as "Instrument ISIN", alongside ISIN_description. Obtaining ISIN codes
+    is also sold as a named product
+    (https://www.wealthreader.com/en/products/obtaining-isin-and-dgs-codes/).
+  spec_location: components.schemas.portfolio_composition_*_item.ISIN
+  why_it_matters: >-
+    A consumer that already speaks ISIN can join these positions to any market-data source with no
+    bespoke mapping. This is the single most valuable standard declaration in the contract.
+- id: iso-13616-iban
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    Account identifiers are returned as IBAN in the accounts schema (`code`, e.g.
+    ES4914651234561234567890) and IBAN is the required input to POST /verify/iban-ownership/,
+    which verifies account holder identity against an IBAN plus a national document number.
+  spec_location: 'components.schemas.accounts; POST /verify/iban-ownership/ requestBody.iban'
+- id: iso-9362-bic
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    The institution catalogue returns a `bic` field (BIC/SWIFT) per institution when one exists —
+    documented in api-reference/institutions.md and present in the live response from
+    GET https://api.wealthreader.com/entities/.
+  spec_location: 'GET /entities/ response, per-entity `bic` property'
+- id: iso-3166-country-codes
+  conforms: true
+  evidence: >-
+    Institutions carry `country_code` and `country_code_list` as ISO country codes; the widget's
+    default_login_entity_country takes an ISO country code.
+- id: dgs-codes
+  conforms: true
+  domain_standard: true
+  evidence: >-
+    Deposit Guarantee Scheme codes are a named published product
+    (https://www.wealthreader.com/en/products/obtaining-isin-and-dgs-codes/) delivered alongside
+    ISIN on portfolio positions.
+  note: >-
+    DGS identification is a European regulatory construct (Directive 2014/49/EU). Recorded as a
+    domain-standard signal, though the identifier scheme itself is not a single ISO registry.
+- id: iso-27001
+  conforms: true
+  evidence: >-
+    "ISO 27001 certified by AENOR" — stated on https://www.wealthreader.com/en/pricing/ in the
+    trust band alongside "Regulated by the Bank of Spain", "Infrastructure hosted in the European
+    Union" and "Support from Spain". AENOR is the Spanish national standards body.
+  certificate_published: false
+  certificate_note: >-
+    The claim is published; the certificate itself is not linked and there is no trust centre page
+    hosting it. A buyer's security review will have to request it.
+- id: gdpr
+  conforms: true
+  evidence: >-
+    Privacy policy published at https://www.wealthreader.com/es/politica-privacidad/ (HTTP 200; the
+    page is a thin HTML wrapper embedding a Google Doc). EU-resident infrastructure is stated on
+    the pricing page. Handling personal financial data as a Spanish AISP puts them squarely in
+    scope.
+  note: The policy is Spanish-only and is not served as a first-class page on the site.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    An OAuth-shaped authorization-code + PKCE flow exists at https://oauth.wealthreader.com/oauth2/
+    with a token exchange at /token/, but it does not conform. Parameter names deviate from RFC
+    7636 (`challenge_code` rather than `code_challenge`), no scopes are defined, and there is no
+    discovery: /.well-known/oauth-authorization-server returned 404 on both
+    www.wealthreader.com and api.wealthreader.com on 2026-09-03. A standard OAuth client cannot be
+    pointed at it.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returned 404 on both hosts, probed 2026-09-03.
+- id: rfc9457
+  conforms: false
+  evidence: >-
+    Errors use a bespoke envelope — {success, error:{code, message}, statistics} with integer codes
+    and a `fatal` flag — served as application/json. No application/problem+json anywhere in the
+    contract. See errors/wealth-reader-problem-types.yml.
+  note: >-
+    The catalogue itself is unusually good — 40 codes and 14 warning codes served LIVE and
+    machine-readable at /error-codes/ and /warning-codes/, each with a cause, a remediation and a
+    retry-safety flag. It is simply not in the standard shape.
+- id: rfc8594-sunset
+  conforms: false
+  evidence: No Sunset or Deprecation headers are documented, and no operation carries deprecated:true.
+- id: rfc9111-caching
+  conforms: partial
+  evidence: >-
+    GET /entities/ returns Cache-Control public, max-age=43200 (12 h), observed live 2026-09-03.
+    The other endpoints return no cache directives.
+- id: idempotency
+  conforms: partial
+  evidence: >-
+    Real idempotency exists on cardsEnrollmentsCreate (keyed on api_key+email while pending) and on
+    webhook delivery (delivery_id), and the docs place an explicit idempotency obligation on the
+    consumer for operation_id. But there is no Idempotency-Key header, and the primary read has no
+    idempotency mechanism at all. See conventions/wealth-reader-conventions.yml.
+- id: pagination
+  conforms: partial
+  evidence: >-
+    Two idioms — a since_id cursor with next_since_id on GET /cards/transactions/, and page-number
+    paging on POST /tokens/. No Link header, no RFC 8288.
+- id: openapi
+  conforms: true
+  version: 3.0.0
+  evidence: >-
+    Two published documents at https://www.wealthreader.com/api-reference/api.yaml (full, with
+    x-i18n blocks for 17 languages) and .../api-for-ai.yaml (the same spec with translations
+    stripped, published expressly for code generation and agents). Both HTTP 200, both parse, both
+    declare servers https://api.wealthreader.com/ and info.contact info@wealthreader.com.
+  note: >-
+    Publishing a separate agent-facing variant of the specification is deliberate and rare. It is
+    the clearest single signal in this profile that the provider is thinking about machine
+    consumers.
+- id: apis-json
+  conforms: true
+  version: '0.23'
+  evidence: >-
+    https://www.wealthreader.com/apis.json returns HTTP 200 with a valid APIs.json 0.23 descriptor
+    indexing every specification, document and endpoint. Self-published on the provider's own
+    domain.
+- id: llms-txt
+  conforms: true
+  evidence: >-
+    https://www.wealthreader.com/llms.txt returns HTTP 200, 3,260 bytes, and every link in it
+    resolves — including a raw-Markdown twin of every documentation page and an llms-full.txt
+    language index. Saved verbatim at llms/wealth-reader-llms.txt.
+- id: fapi
+  conforms: false
+  evidence: No FAPI profile is claimed anywhere; the auth model is a static api_key form field.
+- id: fdx
+  conforms: false
+  evidence: >-
+    No FDX conformance claimed. FDX is the North American open-finance standard; this provider is
+    EU-first and works through PSD2 plus direct connectors.
+- id: berlin-group-nextgenpsd2
+  conforms: false
+  evidence: >-
+    Not claimed. Wealth Reader consumes bank PSD2 interfaces on its clients' behalf and exposes its
+    OWN normalised contract rather than re-exposing a Berlin Group XS2A interface, which is the
+    point of the product.
+- id: scim
+  conforms: false
+- id: odata
+  conforms: false
+compliance_summary:
+  regulator: Banco de España
+  authorisation: Account Information Service (AIS) under PSD2
+  certifications:
+  - ISO/IEC 27001 (AENOR)
+  data_residency: European Union
+  audits: "\"regular security audits\" claimed on the pricing FAQ; no report or attestation is published"
+  soc2: not claimed
+  trust_center: none published

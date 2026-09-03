@@ -1,0 +1,97 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml (info.version) ; https://www.wealthreader.com/en/pricing/ ;
+  https://www.wealthreader.com/docs/en/support.md ; DNS probe of status.wealthreader.com ;
+  https://github.com/Wealth-Reader/wealthreader-api-docs
+versioning:
+  scheme: semver
+  current_version: 8.1.7
+  location: info.version of the published OpenAPI
+  in_url: false
+  in_header: false
+  pinnable: false
+  note: >-
+    A client cannot request a specific version. The spec is at 8.1.7 — a major number of 8 implies
+    a long history of breaking changes — but nothing in the request lets a caller pin one, and
+    nothing in the response says which one answered.
+deprecation:
+  policy_published: false
+  deprecated_operations: []
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    No deprecation policy is published, no operation in the contract carries deprecated:true, and
+    no RFC 8594 Sunset or Deprecation headers are documented. The nearest thing is the tag
+    structure itself: the "Advanced" tag marks eleven operations as "not required for standard
+    integrations. Use only if explicitly instructed by Wealth Reader", and POST
+    /verify/iban-ownership/ carries x-internal:true. That is scoping, not deprecation.
+  no_deprecation_pointer_reason: >-
+    No Deprecation pointer is emitted in apis.yml, because nothing was found to point at.
+status_page:
+  published: false
+  probes:
+  - url: https://status.wealthreader.com/
+    status: '000'
+    note: DNS does not resolve (NXDOMAIN), probed 2026-09-03
+  no_status_pointer_reason: >-
+    No StatusPage pointer is emitted in apis.yml. There is no status page. This matters more than
+    usual for this product: POST /entities/ is a synchronous live bank navigation, and error codes
+    3000 ("Entity under maintenance"), 3001 ("Execution time exceeded") and 3002 ("Connection with
+    the entity is under maintenance") are per-institution availability facts an integrator has no
+    way to see in advance. Per-connector status is the single most useful page this provider does
+    not publish.
+sla:
+  published: true
+  source: https://www.wealthreader.com/en/pricing/
+  tiers:
+  - plan: Launch
+    availability: not stated
+  - plan: Growth
+    availability: 99.5%
+  - plan: Scale
+    availability: 99.5%
+    support_response: under 4 hours (priority support)
+  - plan: Enterprise
+    availability: 99.9%
+    support_response: dedicated support
+  note: >-
+    Availability is committed per plan on the pricing table. There is no separate SLA document, no
+    credit schedule and no published incident history.
+support:
+  channels:
+  - type: help-center
+    url: https://help.wealthreader.com/
+  - type: email
+    value: support@wealthreader.com
+  - type: phone
+    value: '+34 919 049 784'
+    note: described by the provider as the emergency phone
+  - type: sales-email
+    value: hola@wealthreader.com
+  onboarding: >-
+    A technical onboarding session is a documented prerequisite before an api_key is usable — this
+    is a human-gated activation, not a self-serve key.
+  ticket_requirements: >-
+    The provider asks for api_key, domain, operation_id, statistics.SESSION, institution code and
+    approximate UTC time. statistics.SESSION is returned on every response, success or failure,
+    precisely so it can be quoted.
+changelog:
+  see: changelog/wealth-reader-changelog.yml
+roadmap:
+  published: false
+  note: No public roadmap was found on the site, in the docs repo or in the GitHub org.
+source_repositories:
+- url: https://github.com/Wealth-Reader/wealthreader-api-docs
+  purpose: Markdown documentation and the OpenAPI, mirroring the website
+  last_push: '2026-08-24'
+- url: https://github.com/Wealth-Reader/allwr-toolkit
+  purpose: Open-source ALL WR migration toolkit — CLI, typed API client and MCP server
+  license: Apache-2.0
+  created: '2026-08-30'
+  last_push: '2026-09-01'
+- url: https://github.com/Wealth-Reader/.github
+  purpose: Organization profile README
+maturity:
+  api: production, versioned 8.1.7, sold on four paid plans
+  toolkit: alpha (CLI and MCP marked Alpha; Asana and Freshdesk connectors Beta), unreleased to PyPI

@@ -1,0 +1,94 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  https://github.com/Wealth-Reader/allwr-toolkit ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/docs/mcp.md ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/docs/cli.md ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/pyproject.toml
+name: ALL WR Toolkit MCP server
+status: published
+vendor: Wealthreader S.L.
+license: Apache-2.0
+scope: >-
+  This server operates MIGRATION WORKFLOWS on ALL WR (allwr.io), the company's Open Finance and
+  business-operations platform. It is NOT an MCP front end for the Wealth Reader bank-aggregation
+  API at api.wealthreader.com — none of its tools read accounts, portfolios or transactions. It is
+  recorded here because it is real, first-party, open-source MCP work published by the same
+  company (Wealthreader S.L., the maintainer named in apis.yml).
+deployment:
+  mode: local-stdio
+  endpoint: null
+  install: "pip install 'allwr-toolkit[mcp]' && allwr-toolkit mcp serve"
+  package: https://github.com/Wealth-Reader/allwr-toolkit
+  auth: api-key
+  verified: searched
+  note: >-
+    stdio only. There is no hosted endpoint an agent can POST to — nothing at mcp.wealthreader.com
+    (DNS does not resolve), api.wealthreader.com/mcp (404) or www.wealthreader.com/mcp (404).
+    A human installs and runs it before any agent sees it. The package is not on PyPI yet, so the
+    install line only works from a clone today (`pip install '.[mcp]'`).
+transport: stdio
+sdk: mcp>=1.2,<2 (Python)
+auth:
+  api_key_env: ALLWR_TOOLKIT_ALLWR_API_KEY
+  key_form: 'ALL WR API key, wrk_ prefix, requires the tasks:import scope'
+  note: Credentials come from environment variables only; never CLI arguments, never stored in state.
+write_gating:
+  env: ALLWR_MCP_ALLOW_WRITES
+  default: false
+  rule: >-
+    Write tools are registered only when the server environment sets ALLWR_MCP_ALLOW_WRITES=true.
+    An agent cannot enable them from inside a session. apply_plan additionally re-verifies the
+    plan's SHA-256 hash and its target identity immediately before writing, so the dry-run cycle
+    cannot be skipped. Documented in docs/adr/0005-mcp-write-gating.md and covered by
+    tests/integration/test_mcp.py.
+tools:
+- name: list_connectors
+  kind: read
+  description: List available migration connectors.
+- name: describe_connector
+  kind: read
+  description: Capabilities, configuration and limitations of one connector.
+- name: validate_config
+  kind: read
+  description: Validate a migration configuration file.
+- name: inspect_source
+  kind: read
+  description: Summarize the source system, read-only.
+- name: generate_plan
+  kind: planning
+  description: Build a migration plan; writes only the local plan file.
+- name: inspect_plan
+  kind: read
+  description: Inspect a previously generated plan.
+- name: migration_status
+  kind: read
+  description: Status of a migration run, from the checkpoint state store.
+- name: migration_report
+  kind: read
+  description: Generate the report bundle for a run.
+- name: apply_plan
+  kind: write
+  gated_by: ALLWR_MCP_ALLOW_WRITES
+  description: Apply a verified plan to the configured ALL WR tenant. Marked WRITE in its own description.
+- name: resume_migration
+  kind: write
+  gated_by: ALLWR_MCP_ALLOW_WRITES
+  description: Resume an interrupted migration from its checkpoint.
+- name: cancel_migration
+  kind: write
+  gated_by: ALLWR_MCP_ALLOW_WRITES
+  description: Cancel a run; state stays resumable.
+tool_count: 11
+input_schemas: >-
+  Not captured. The server is stdio-only, so there is no anonymous endpoint to run tools/list
+  against; the names and descriptions above are read verbatim from the provider's own docs/mcp.md.
+  Real inputSchema values need a local install and an authenticated introspection.
+probes:
+- url: https://mcp.wealthreader.com/mcp
+  status: '000'
+  note: DNS does not resolve
+- url: https://api.wealthreader.com/mcp
+  status: 404
+- url: https://www.wealthreader.com/mcp
+  status: 404

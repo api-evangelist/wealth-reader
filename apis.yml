@@ -65,6 +65,8 @@ maintainers:
   X-linkedin: https://www.linkedin.com/company/wealthreader/
 image: https://www.wealthreader.com/i/wealthreader.svg
 common:
+- type: DomainSecurity
+  url: security/wealth-reader-domain-security.yml
 - type: Documentation
   url: https://www.wealthreader.com/docs/
 - type: SignUp
@@ -73,9 +75,80 @@ common:
   url: https://blog.wealthreader.com/
 - type: PrivacyPolicy
   url: https://www.wealthreader.com/es/politica-privacidad/
+- type: OpenAPI
+  url: openapi/wealth-reader-api-for-ai.yaml
+- type: OpenAPI
+  url: openapi/wealth-reader-api.yaml
+- type: Overlay
+  url: overlays/wealth-reader-api-for-ai-overlay.yaml
+- type: DeveloperPortal
+  url: https://www.wealthreader.com/docs/
+- type: APIReference
+  url: https://www.wealthreader.com/api-reference/en/
+- type: GettingStarted
+  url: https://www.wealthreader.com/docs/en/introduction/
+- type: GitHubOrganization
+  url: https://github.com/Wealth-Reader
+- type: Support
+  url: https://help.wealthreader.com/
+- type: Pricing
+  url: https://www.wealthreader.com/en/pricing/
+- type: Postman
+  url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
+- type: LLMsTxt
+  url: llms/wealth-reader-llms.txt
+- type: Authentication
+  url: authentication/wealth-reader-authentication.yml
+- type: Conventions
+  url: conventions/wealth-reader-conventions.yml
+- type: Idempotency
+  url: conventions/wealth-reader-conventions.yml
+- type: ErrorCatalog
+  url: errors/wealth-reader-problem-types.yml
+- type: ErrorCodes
+  url: https://api.wealthreader.com/error-codes/
+- type: RateLimits
+  url: rate-limits/wealth-reader-rate-limits.yml
+- type: Plans
+  url: plans/wealth-reader-plans-pricing.yml
+- type: Lifecycle
+  url: lifecycle/wealth-reader-lifecycle.yml
+- type: ChangeLog
+  url: changelog/wealth-reader-changelog.yml
+- type: Conformance
+  url: conformance/wealth-reader-conformance.yml
+- type: Compliance
+  url: conformance/wealth-reader-conformance.yml
+- type: Security
+  url: security/wealth-reader-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/wealth-reader-vulnerability-disclosure.yml
+- type: Sandbox
+  url: sandbox/wealth-reader-sandbox.yml
+- type: Components
+  url: components/wealth-reader-components.yml
+- type: DataModel
+  url: data-model/wealth-reader-data-model.yml
+- type: Packages
+  url: packages/wealth-reader-packages.yml
+- type: CLI
+  url: cli/wealth-reader-cli.yml
+- type: MCPServer
+  url: mcp/wealth-reader-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/wealth-reader-tool-crosswalk.yml
+- type: Webhooks
+  url: asyncapi/wealth-reader-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
 x-source:
   apis_json: https://www.wealthreader.com/apis.json
   fetched: '2026-09-03'
   via: api-search/inbox#13, submitted by the provider
   note: Merged from the descriptor the provider serves on their own domain. Only the self url was re-pointed
     at this record.
+x-enrichment:
+  date: '2026-09-03'
+  status: enriched
+  artifacts_added: 28
+  pass: local-v1

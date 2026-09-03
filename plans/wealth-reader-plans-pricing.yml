@@ -1,0 +1,126 @@
+generated: '2026-09-03'
+method: searched
+source: https://www.wealthreader.com/en/pricing/
+docs: https://www.wealthreader.com/en/pricing/
+currency: EUR
+billing_unit: financial products read per month
+billing_unit_definition: >-
+  A product is each account, card, loan, deposit or investment position Wealth Reader reads during
+  the month. A single bank connection can contain 2, 10 or 100 products — a customer with a
+  current account, two cards and a loan at one bank is four products. Billing is on products
+  actually retrieved, not on the number of bank connections or API calls.
+vat: excluded from all listed prices
+annual_discount: 15% off every plan when billed annually in advance
+plan_count: 4
+plans:
+- name: Launch
+  positioning: To launch your first real integration.
+  price_monthly: 212
+  price_monthly_billed_annually: 180
+  price_annual: 2160
+  annual_saving: 384
+  currency: EUR
+  period: month
+  quota:
+    products_per_month: 30
+    comparator: up to
+  included:
+  - Technical access to the entire API catalog
+  - Managed shared environment
+  - Documentation and support in the tool
+  - Bonus setup
+  - No minimum term
+  sla: null
+  cta: Start now
+- name: Growth
+  positioning: For startups and growing financial products.
+  price_monthly: 695
+  price_monthly_billed_annually: 590
+  price_annual: 7080
+  annual_saving: 1260
+  currency: EUR
+  period: month
+  quota:
+    products_per_month: 150
+    comparator: up to
+  included:
+  - Everything in Launch
+  - Integration support
+  - Onboarding included
+  - Access to premium connectors at a specific rate
+  sla: 99.5%
+  cta: Choose Growth
+- name: Scale
+  positioning: For fintechs and entities with consolidated production.
+  most_chosen: true
+  price_monthly: 1200
+  price_monthly_billed_annually: 1020
+  price_annual: 12240
+  annual_saving: 2160
+  currency: EUR
+  period: month
+  quota:
+    products_per_month: 750
+    comparator: up to
+  included:
+  - Everything in Growth
+  - Priority support under 4 hours
+  - Coverage across 250+ banks and 61 countries
+  - Advanced investment capabilities
+  - Migration support
+  sla: 99.5%
+  cta: Book a demo
+- name: Enterprise
+  positioning: For banks, large platforms and high volumes.
+  price_monthly: 3500
+  price_monthly_billed_annually: 2975
+  price_annual: 35700
+  annual_saving: 6300
+  price_qualifier: from
+  currency: EUR
+  period: month
+  quota:
+    products_per_month: 750
+    comparator: more than
+    note: Custom volume and price.
+  included:
+  - Dedicated and customizable infrastructure
+  - Dedicated support
+  - Homologation and regulatory compliance
+  sla: 99.9%
+  cta: Talk to an expert
+included_in_every_plan:
+- Full API access
+- API-to-API connectors
+- Sandbox and production
+- Advanced normalization
+- Real-time / intraday data
+- Support from Spain
+usage_rates:
+- name: Standard banking
+  detail: PSD2 accounts, cards and connections included within each plan's volume.
+  price: included
+- name: Investment and wealth
+  detail: Premium connectors.
+  price: 3
+  unit: EUR per active product
+  qualifier: from
+- name: Large volumes
+  detail: PSD2 rates with a volume commitment.
+  price: 0.25
+  unit: EUR per product per month
+  qualifier: from
+free_tier: false
+trial: false
+trial_note: >-
+  The provider states explicitly that there is no limited demo — "From day one you work with the
+  real API, the complete catalog and integration support." The Launch plan has no minimum term and
+  a bonus setup instead.
+self_serve: false
+self_serve_note: >-
+  No card-on-file signup. Every path requires contact with the company: signup plus a mandatory
+  onboarding session with the technical team before an api_key is usable, and the widget domain
+  must be authorised in the client area first. Two of the four plan CTAs are "Book a demo" and
+  "Talk to an expert".
+plan_changes: Upgrade or downgrade takes effect on the next billing cycle, with no penalty.
+overage: Billed per unit at the plan's current rates; the provider warns in advance near the limit.

@@ -1,0 +1,103 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/docs/cli.md ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/README.md ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/docs/installation.md ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/pyproject.toml
+name: allwr-toolkit
+vendor: Wealthreader S.L.
+license: Apache-2.0
+language: python
+requires: Python 3.11+ (tested on 3.11-3.14)
+repository: https://github.com/Wealth-Reader/allwr-toolkit
+status: alpha
+scope: >-
+  Operates ALL WR (allwr.io) — the company's Open Finance and business-operations platform — not
+  the bank-aggregation API at api.wealthreader.com. There is no CLI for the bank-aggregation API.
+install:
+- method: pip
+  command: pip install allwr-toolkit
+  available: false
+  note: The package is not on PyPI yet; pypi.org/pypi/allwr-toolkit/json returned 404 on 2026-09-03.
+- method: pip with MCP extra
+  command: pip install 'allwr-toolkit[mcp]'
+  available: false
+- method: source
+  command: git clone https://github.com/Wealth-Reader/allwr-toolkit && cd allwr-toolkit && pip install '.[mcp]'
+  available: true
+global_flags:
+- flag: --json
+  description: Machine-readable output.
+- flag: --verbose
+- flag: --debug
+  description: Warns that extra operational metadata may be logged.
+commands:
+- group: general
+  items:
+  - command: allwr-toolkit version
+    description: Print the version.
+  - command: allwr-toolkit doctor [--config F]
+    description: Check setup and configuration.
+- group: connectors
+  items:
+  - command: allwr-toolkit connectors list
+    description: List available connectors.
+  - command: allwr-toolkit connectors describe <id>
+    description: Capabilities, configuration and limitations of one connector.
+- group: migrate
+  items:
+  - command: allwr-toolkit migrate <id> inspect --config F
+    description: Summarize the source, read-only.
+  - command: allwr-toolkit migrate <id> plan --config F --out P
+    description: Build and save a plan. Writes only the local plan file.
+  - command: allwr-toolkit migrate <id> apply --config F --plan P [--no-dry-run] [--yes]
+    description: Dry-run by default; --no-dry-run writes to the configured ALL WR tenant.
+- group: migration
+  items:
+  - command: allwr-toolkit migration status <run-id>
+    description: Run status from the checkpoint state store.
+  - command: allwr-toolkit migration resume <run-id> --config F --plan P
+    description: Resume from checkpoint.
+  - command: allwr-toolkit migration cancel <run-id>
+    description: Cancel; state stays resumable.
+  - command: allwr-toolkit migration report <run-id> --plan P
+    description: Generate the report bundle.
+  - command: allwr-toolkit migration cleanup-plan <run-id>
+    description: Print the deterministic cleanup manifest of created records.
+- group: mcp
+  items:
+  - command: allwr-toolkit mcp serve
+    description: Run the MCP server on stdio.
+connectors:
+- id: asana
+  status: beta
+  scope: projects, tasks, comments, attachments; offline export mode and live API mode
+- id: freshdesk
+  status: beta
+  scope: tickets, conversations (private notes kept private), contacts, companies, attachments
+key_flows:
+- name: dry-run migration
+  steps:
+  - allwr-toolkit connectors describe asana
+  - allwr-toolkit migrate asana inspect --config migration.yaml
+  - allwr-toolkit migrate asana plan --config migration.yaml --out migration-plan.json
+  - allwr-toolkit migrate asana apply --config migration.yaml --plan migration-plan.json
+  note: Steps 1-4 write nothing anywhere except the local plan file.
+- name: apply for real
+  steps:
+  - allwr-toolkit migrate asana apply --config migration.yaml --plan migration-plan.json --no-dry-run --yes
+  safety: >-
+    The toolkit shows the exact target (base URL, project, record and write counts) before writing,
+    re-verifies the plan's SHA-256 hash, is idempotent on re-runs and can resume after
+    interruption. There is deliberately no default target.
+secrets:
+  rule: Environment variables only; never CLI arguments (process argument lists leak).
+  variables:
+  - ALLWR_TOOLKIT_ALLWR_API_KEY
+  - ALLWR_TOOLKIT_ASANA_TOKEN
+  - ALLWR_TOOLKIT_FRESHDESK_API_KEY
+  - ALLWR_MCP_ALLOW_WRITES
+  redaction: Secrets and personal identifiers are redacted from logs, errors and reports; no tokens are stored in state.
+  telemetry: none
+exit_codes: documented in docs/troubleshooting.md

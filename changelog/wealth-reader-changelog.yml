@@ -1,0 +1,59 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml (info.version) ;
+  https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/CHANGELOG.md ;
+  https://github.com/Wealth-Reader/wealthreader-api-docs (commit history) ;
+  site and docs search for a dated API changelog
+api_changelog:
+  published: false
+  note: >-
+    Wealth Reader publishes NO dated changelog for the bank-aggregation API. The specification
+    carries a semver version (8.1.7) and the docs repo carries git history, but there is no page
+    or file that says what changed between versions, when, or whether it was breaking. A major
+    number of 8 means a lot has changed; none of it is narrated. This is the clearest operational
+    gap in an otherwise well-documented surface.
+  scheme: semver
+  current_version: 8.1.7
+  version_source: info.version of the published OpenAPI
+  substitutes:
+  - surface: https://github.com/Wealth-Reader/wealthreader-api-docs
+    detail: >-
+      The docs and both OpenAPI documents are mirrored to a public repo, so a diligent consumer can
+      diff commits to reconstruct changes. That is a workaround, not a changelog.
+toolkit_changelog:
+  published: true
+  url: https://github.com/Wealth-Reader/allwr-toolkit/blob/main/CHANGELOG.md
+  scheme: Keep a Changelog 1.1.0 + Semantic Versioning
+  scope: >-
+    Covers allwr-toolkit — the ALL WR migration CLI/MCP — not the Wealth Reader API. It is the only
+    dated, structured changelog the company publishes.
+  current_release: none
+  entries:
+  - version: Unreleased
+    date: null
+    breaking: []
+    additions:
+    - >-
+      Migration core: canonical model, configuration-driven mapping, plan/apply lifecycle with
+      SHA-256 plan verification, SQLite checkpoint state with resume, idempotent execution,
+      cooperative cancellation and a report bundle (JSON, HTML, CSV, cleanup manifest).
+    - >-
+      Typed ALL WR Tasks import-mode API client — retries with backoff and jitter, Retry-After
+      support, idempotency keys, correlation ids, redacted logging.
+    - Connector SDK with entry-point plugin discovery.
+    - >-
+      Asana importer (beta): offline export mode and live API mode, curated GID selection manifest,
+      rich-subtask vs checklist distinction, GID preservation.
+    - >-
+      Freshdesk importer (beta): tickets, conversations with private notes kept private, contacts,
+      companies, streamed attachments, HTML sanitization.
+    - >-
+      allwr-toolkit CLI: doctor, connectors, migrate inspect/plan/apply,
+      migration status/resume/cancel/report/cleanup-plan, mcp serve; JSON output and meaningful
+      exit codes; dry-run by default.
+    - >-
+      MCP server (alpha): read and planning tools by default; mutating tools only with
+      ALLWR_MCP_ALLOW_WRITES=true; apply requires a verified plan.
+    - Full test suite (unit, contract, integration), quality tooling, CI/security workflows, documentation and governance files.
+    highlights: First public cut of the toolkit. Nothing released to a registry yet.

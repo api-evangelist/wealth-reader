@@ -1,0 +1,70 @@
+# generated: '2026-09-03'
+# method: generated
+# source: openapi/wealth-reader-api-for-ai.yaml
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay for the Wealth Reader API
+  version: 1.0.0
+extends: openapi/wealth-reader-api-for-ai.yaml
+x-provenance:
+  generated: '2026-09-03'
+  method: generated
+  source: openapi/wealth-reader-api-for-ai.yaml
+  note: >-
+    Captures only enhancements API Evangelist derived from the provider's own published material —
+    operationIds for the eight operations the spec leaves unnamed, a license and terms-of-service
+    slot, and the security scheme the docs describe but the spec never declares. The original
+    specification is never mutated; it is stored verbatim in openapi/.
+actions:
+- target: $.info
+  description: Record the canonical documentation and support surfaces on the spec itself.
+  update:
+    contact:
+      name: Wealth Reader Support
+      email: support@wealthreader.com
+      url: https://help.wealthreader.com/
+- target: $.servers[0]
+  description: Name the production host explicitly.
+  update:
+    description: Production Server (api.wealthreader.com)
+    x-region: EU
+- target: $.paths['/entities/'].post
+  description: The primary read operation has no operationId in the source spec.
+  update:
+    operationId: readEntityData
+- target: $.paths['/entities/category-types/'].get
+  update:
+    operationId: getCategoryTypes
+- target: $.paths['/error-codes/'].get
+  update:
+    operationId: getErrorCodes
+- target: $.paths['/warning-codes/'].get
+  update:
+    operationId: getWarningCodes
+- target: $.paths['/verify/iban-ownership/'].post
+  update:
+    operationId: verifyIbanOwnership
+- target: $.paths['/batch/load/'].post
+  update:
+    operationId: batchLoad
+- target: $.paths['/batch/fetch/statistics/'].post
+  update:
+    operationId: batchFetchStatistics
+- target: $.paths['/batch/fetch/connection-result/'].post
+  update:
+    operationId: batchFetchConnectionResult
+- target: $.components
+  description: >-
+    The source spec declares no securitySchemes at all, even though every operation requires an
+    api_key. Declared here as it is actually carried, per the provider's own docs and the CORS
+    Access-Control-Allow-Headers on api.wealthreader.com.
+  update:
+    securitySchemes:
+      apiKeyFormField:
+        type: apiKey
+        in: query
+        name: api_key
+        description: >-
+          Carried as an api_key field in the application/x-www-form-urlencoded request body on POST
+          operations, and as a query parameter on GET /cards/transactions/. api.wealthreader.com
+          also advertises X-API-KEY in Access-Control-Allow-Headers.

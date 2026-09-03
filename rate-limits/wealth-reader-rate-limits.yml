@@ -1,0 +1,103 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml (cardsEnrollmentsCreate description) ;
+  https://www.wealthreader.com/en/pricing/ ; live header observation on
+  https://api.wealthreader.com/entities/ and /error-codes/ (both HTTP 200, 2026-09-03)
+docs: https://www.wealthreader.com/en/pricing/
+limit_count: 2
+summary: >-
+  Wealth Reader publishes exactly one per-second rate limit, on one endpoint, inside the OpenAPI
+  description rather than in a limits page. Everything else is a commercial monthly quota measured
+  in "products read", enforced by the plan rather than by a request ceiling. There are no
+  rate-limit response headers of any kind.
+response_headers:
+  observed: []
+  standard_ratelimit_headers: false
+  retry_after: false
+  note: >-
+    Probed live on 2026-09-03. GET https://api.wealthreader.com/entities/?show_only_tested=1 and
+    GET https://api.wealthreader.com/error-codes/?lang=en both returned 200 with no X-RateLimit-*,
+    no RateLimit-*, and no Retry-After. The only headers present are Strict-Transport-Security,
+    Referrer-Policy, X-Content-Type-Options, CORS and Content-Security-Policy. An agent therefore
+    has NO runtime signal for how close it is to a limit — it discovers exhaustion only by being
+    refused.
+limits:
+- scope: per-endpoint per-api-key
+  operation: cardsEnrollmentsCreate
+  path: POST /cards/enrollments/
+  limit: 60
+  window: 60s
+  burst: null
+  status_on_exhaustion: 429
+  error_code: rate_limited
+  counts: >-
+    Every attempt, not only the ones that create a row, and it is checked before anything else, so
+    the responses that create nothing (200 already active, 409 linked to another customer, 400)
+    cannot be walked as an enumeration oracle.
+  evidence: >-
+    Stated verbatim in the operation description in the published OpenAPI:
+    "Rate limit: at most 60 calls to this endpoint per api_key every 60 seconds".
+- scope: per-endpoint
+  operation: cardsTransactionsList
+  path: GET /cards/transactions/
+  limit: 1000
+  window: per request
+  unit: transactions
+  status_on_exhaustion: null
+  note: >-
+    A page-size ceiling rather than a rate limit — `limit` defaults to 500 and maxes at 1000, with
+    next_since_id as the cursor. Recorded because it is the only other hard numeric ceiling in the
+    contract.
+quotas:
+- scope: per-account monthly
+  unit: financial products read per month
+  definition: >-
+    A product is each account, card, loan, deposit or investment position read during the month.
+    One bank connection can hold 2, 10 or 100 products. Billing is on products actually retrieved,
+    not on bank accesses.
+  tiers:
+    Launch: 30
+    Growth: 150
+    Scale: 750
+    Enterprise: '>750, custom volume'
+  overage: Billed per unit at the plan's current rate; the provider warns in advance near the limit.
+  source: https://www.wealthreader.com/en/pricing/
+- scope: per-product monthly refresh
+  limit: 120
+  window: month
+  note: >-
+    Pricing states each product's information can be refreshed "more than 120 times each month"
+    within the plan. This is a floor the provider advertises, not a documented hard ceiling.
+  source: https://www.wealthreader.com/en/pricing/
+- scope: per-end-user concurrency
+  limit: 1
+  window: concurrent session
+  status_on_exhaustion: 200 with error.code 2005
+  note: >-
+    Not a request-rate limit but it behaves like one. Error 2005 "There is already an active
+    session for this user" is returned when simultaneous connections are detected for the same
+    end user; the API blocks parallel connections. Remediation in the provider's own error
+    reference is to retry at intervals, "such as every 5 minutes".
+  source: https://api.wealthreader.com/error-codes/?lang=en
+- scope: per-token pagination
+  operation: queryTokensByApiKey
+  limit: 500
+  window: per page
+  note: POST /tokens/ returns tokens in blocks of 500 per page.
+timeouts:
+  note: >-
+    Not a limit but the operational constraint an agent must plan around. POST /entities/ is
+    SYNCHRONOUS and can take minutes when the institution raises a second factor; the provider's
+    own endpoint reference says to use a generous client timeout. fetch_transaction_details
+    multiplies execution time by adding one or more extra navigations per transaction. Error 3001
+    "Execution time exceeded" is the transient failure this produces.
+webhook_retries:
+  surface: cards webhook delivery
+  schedule: 1 min, 5 min, 30 min, 2 h, 24 h
+  success: HTTP 2xx
+  note: >-
+    The exact same body is resent each attempt; after the last failed attempt the delivery is
+    marked failed for good. This is the provider's own backoff, and the closest thing in the
+    contract to a documented retry policy.
+  source: openapi/wealth-reader-api-for-ai.yaml (cards-webhook-delivery schema)

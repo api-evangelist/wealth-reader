@@ -1,0 +1,115 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml (cardsWebhookRegister operation, x-webhook-delivery
+  extension and the cards-webhook-delivery schema) ;
+  https://github.com/Wealth-Reader/wealthreader-api-docs/blob/main/api-reference/endpoints.md ;
+  https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend.md
+asyncapi_published: false
+asyncapi_note: >-
+  No AsyncAPI document exists. Probed https://www.wealthreader.com/asyncapi.yaml and the
+  Wealth-Reader GitHub org (3 repos, none containing one). The event surface below is real and
+  documented, but only as an OpenAPI extension and prose — an agent cannot consume it as a spec.
+  The provider does something better than most, though: the delivery body is a first-class schema
+  (cards-webhook-delivery) reachable from the registering operation via a custom
+  x-webhook-delivery extension, so the payload IS machine-readable even though the channel is not.
+event_surfaces: 3
+webhooks:
+- name: cards-realtime
+  registration:
+    operation: cardsWebhookRegister
+    path: POST /cards/webhook/
+    fields:
+      webhook_url: 'https:// only, must resolve to a publicly routable host'
+      rotate_secret: boolean
+    disable: 'send webhook_url: null'
+    leave_unchanged: omit webhook_url (this is how the secret is rotated without changing the URL)
+  events:
+  - name: card_transaction.created
+    payload_schema: cards-transaction
+    description: A real-time card expense captured by the Open Sync mobile app for a linked employee.
+  - name: card_enrollment.confirmed
+    payload_schema: cards-enrollment
+    description: An employee confirmed their pre-registered email; the enrollment moves to active.
+  delivery:
+    method: POST
+    content_type: application/json
+    headers:
+      User-Agent: Wealthreader-Cards/1.0
+      Origin: https://api.wealthreader.com
+      X-WR-Event: <event name>
+      X-WR-Delivery: <delivery_id, 32 hex>
+      X-WR-Signature: sha256=<hex of hmac_sha256(raw_body, webhook_secret)>
+    body_required_fields: [event, delivery_id, sent_at, api_key, data]
+  security:
+    signature: HMAC-SHA256 over the raw body, keyed with webhook_secret
+    secret: 64 hex characters, returned exactly once at first setup or on rotate_secret; null thereafter
+    verification_instruction: >-
+      The provider explicitly requires a constant-time comparison (hash_equals or equivalent)
+      before trusting the body.
+    ssrf_protection: >-
+      Notable and unusually thorough. webhook_url must be https and must resolve to a publicly
+      routable host: localhost, private, loopback, link-local (including the cloud metadata
+      address), CGNAT, multicast and reserved addresses are rejected in ANY notation — hexadecimal,
+      decimal, octal, short dotted or IPv4-mapped IPv6 — and so is a hostname that does not resolve.
+      The check runs again immediately before EVERY delivery, not only at registration, so a host
+      repointed at an internal address afterwards (DNS rebinding) has the delivery closed as failed
+      with response_excerpt "blocked_host".
+  delivery_semantics:
+    success: HTTP 2xx
+    retries: [1 min, 5 min, 30 min, 2 h, 24 h]
+    body_on_retry: byte-identical, same delivery_id
+    terminal: after the last failed attempt the delivery is marked failed for good
+    secret_rotation_during_retry: pending retries are signed with the NEW secret
+    ordering: not guaranteed
+  backfill:
+    operation: cardsTransactionsList
+    path: GET /cards/transactions/
+    note: >-
+      The same transaction object the webhook carries is also pollable, with a since_id cursor.
+      This is the pattern an agent wants — a push channel and a replayable pull channel over one
+      object — and it is the strongest part of this API's event design.
+- name: batch-completion
+  registration:
+    operation: 'POST /batch/load/'
+    field: notification_url
+    note: >-
+      Not a durable subscription — the callback URL is supplied per batch. Requires a dedicated
+      environment; NOT available on api.wealthreader.com.
+  events:
+  - name: batch credential completed
+    payload_fields: [batch_id, credential_id, status, timestamp]
+    description: >-
+      Fired per individual credential the moment it finishes, not once at the end of the batch.
+  security:
+    signature: none published
+  delivery_semantics:
+    retries: not published
+- name: widget-callback
+  registration:
+    mechanism: client area at https://www.wealthreader.com/clients/, or addDomain (POST /domains/)
+    field: url_callback
+  events:
+  - name: read completed
+    payload_schema: the same JSON as POST /entities/
+    description: >-
+      The full normalised bank payload, POSTed to the integrator's HTTPS endpoint BEFORE the
+      frontend is notified. statistics.operation_id, statistics.token and statistics.code arrive
+      with it.
+  contract:
+    consumer_must_respond: 'HTTP 200 with body {"status":"ok"}'
+    consequence_of_failure: >-
+      The widget does not emit "flow completed" to the frontend, and the end user never sees a
+      success screen. The callback is the load-bearing path; postMessage is only a UI signal and
+      carries no bank data.
+    idempotency: >-
+      The integrator must treat operation_id as idempotent — a repeated delivery must not create
+      two operations.
+  security:
+    signature: none
+    gap: >-
+      This is the highest-value payload in the whole product — a full bank data set — and it is
+      delivered unsigned. Authenticity rests entirely on prior domain registration and an
+      unguessable operation_id. The cards webhook, carrying far less, IS HMAC-signed. Closing that
+      asymmetry would be the single biggest improvement available to this event surface.
+    retries: not published

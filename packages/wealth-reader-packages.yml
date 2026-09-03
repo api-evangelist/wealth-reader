@@ -1,0 +1,60 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  https://api.github.com/orgs/Wealth-Reader/repos ; https://raw.githubusercontent.com/Wealth-Reader/allwr-toolkit/main/pyproject.toml ;
+  https://pypi.org/pypi/allwr-toolkit/json (404) ; https://registry.npmjs.org/-/v1/search?text=wealthreader
+note: >-
+  Wealth Reader publishes NO client library for the bank-aggregation API itself. Integration is by
+  the hosted iframe widget (see components/) or by direct form-encoded HTTP, and the docs offer a
+  Postman collection instead of an SDK. The one first-party package is allwr-toolkit, an Apache-2.0
+  Python toolkit for ALL WR — the company's Open Finance and business-operations platform on
+  allwr.io — which carries a typed ALL WR API client, a CLI and an MCP server. It is not published
+  to PyPI yet (pyproject says "once published"; pypi.org/pypi/allwr-toolkit/json returns 404), so
+  the only distribution today is `pip install .` from source. Because no package wraps the
+  Wealth Reader API, no `SDKs` pointer is emitted; the CLI and MCP pointers are.
+packages:
+- name: allwr-toolkit
+  registry: none
+  official: true
+  language: python
+  version: null
+  published: null
+  declared_version: 0.1.0.dev0
+  license: Apache-2.0
+  repository: https://github.com/Wealth-Reader/allwr-toolkit
+  install: pip install .        # from a clone; `pip install '.[mcp]'` adds the MCP server
+  requires_python: '>=3.11'
+  targets: ALL WR Tasks import-mode API (allwr.io) — not the Wealth Reader bank-aggregation API
+  provides:
+  - cli
+  - mcp-server
+  - typed-api-client
+  status: alpha
+  note: >-
+    version/published are null because the package has never been released to a registry — checked
+    2026-09-03, pypi.org/pypi/allwr-toolkit/json returned 404. `declared_version` is the version
+    string in pyproject.toml on main (0.1.0.dev0), which is a source marker, not a release. Repo
+    created 2026-08-30, last push 2026-09-01.
+- name: '@n8n-dev/n8n-nodes-wealthreader'
+  registry: npm
+  official: false
+  language: javascript
+  version: 1.0.1
+  published: '2026-06-09'
+  repository: https://github.com/n8n-code/n8n-nodes-wealthreader
+  note: >-
+    Third-party n8n community node, published under the @n8n-dev scope by the n8n-code org, not by
+    Wealth Reader. Recorded for completeness; it does not count as a first-party SDK.
+registries_checked:
+- registry: pypi
+  query: allwr-toolkit
+  result: 404 not found
+- registry: pypi
+  query: wealthreader
+  result: 404 not found
+- registry: npm
+  query: wealthreader
+  result: 1 hit, third-party only
+- registry: packagist
+  query: wealthreader
+  result: 0 hits

@@ -1,0 +1,211 @@
+generated: '2026-09-03'
+method: derived
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml ($ref graph under components.schemas, plus id-reference
+  fields) ; enriched from
+  https://github.com/Wealth-Reader/wealthreader-api-docs/blob/main/api-reference/institutions.md
+summary: >-
+  The model is a wide, shallow star, not a deep graph. One read of POST /entities/ returns a single
+  entity-data envelope whose payload holds seventeen sibling product arrays for one end user at one
+  institution. There are no cross-entity references and no global object ids — nothing points from
+  an account at BBVA to an account at CaixaBank — so the joining key across reads is the
+  integrator's own operation_id plus statistics.code, not anything the provider assigns.
+identifiers:
+  primary:
+    field: uuid
+    format: 40 hex characters
+    scope: >-
+      Present on every product and on transactions. Stable across reads, which is what makes
+      incremental sync possible without diffing on amount and date. This is the most important
+      single field in the model.
+  institution:
+    field: code
+    example: bbva, caixabank, abanca
+    echoed_in: statistics.code
+  session:
+    field: statistics.SESSION
+    purpose: support correlation, returned on success and on failure alike
+  operation:
+    field: statistics.operation_id
+    owner: the integrator generates it; the API echoes it
+  id_prefixes: none — uuids are bare hex, not typed like acct_ / txn_
+entities:
+- name: entity-data
+  role: response envelope
+  description: The whole result of one read of one institution for one end user.
+  fields: [success, payload, statistics]
+- name: user_information
+  role: person
+  fields: [ID, name, gender, birth_date, birth_place, email, cell_phone, address, city, country, postal_code, marital_status, job]
+  note: >-
+    National identity document number (ID) and full personal detail. This is the most sensitive
+    object in the model and it is returned by default unless product_types excludes it.
+- name: accounts
+  role: product
+  fields: [uuid, subtype, interest_rate, line_of_credit_details, code, name, currency, owners, balances, additional_info, transactions]
+  key_field: code is the IBAN
+- name: cards
+  role: product
+  fields: [status, subtype, uuid, code, name, currency, next_payment_date, anual_interest, tae, balances, linked_account, owner, additional_info, transactions]
+- name: loans
+  role: product
+  fields: [uuid, contract_number, loan_type, constitution_date, currency, granted_capital, pending_amount, next_installment, linked_account, holders, interest_rate, expiration_date, pending_receipts, amortization_made, amortization_pending]
+- name: deposits
+  role: product
+  fields: [uuid, code, name, currency, principal, pending_principal, start_date, maturity_date, payment_frequency, capitalization, rate_type, nominal_interest_rate, apr_tae, day_count_convention, linked_account, accrued_interest, expected_interest_total, withholding_tax_rate, status, auto_renewal, early_withdrawal, owners, interest_movements, principal_movements]
+- name: portfolios
+  role: product group
+  variants: [portfolio_funds, portfolio_stocks, portfolio_bonds, portfolio_pension_plans, portfolio_alternative_investments, portfolio_crypto]
+  shared_base: portfolio_common
+  base_fields: [subtype, uuid, code, name, currency, total_value, weighted_return, annualized_volatility, yield, contributions, withholdings, contracting_date, linked_account, portfolio_statement, owners, composition, transactions]
+  note: >-
+    This is the part regulatory PSD2 APIs do not return, and it is the company's reason to exist.
+    Each variant composes portfolio_common with its own composition schema.
+- name: portfolio_composition_*
+  role: position line
+  variants: [funds, stocks, pension_plans, bonds, crypto]
+  item_key_fields: [ISIN, ISIN_description]
+  note: ISO 6166 ISIN on each position is what lets a consumer join to external market data.
+- name: portfolio_transactions
+  role: movement
+- name: receipts
+  role: product
+- name: leases
+  role: product
+- name: insurances
+  role: product
+- name: factoring
+  role: product
+- name: confirming
+  role: product
+- name: properties
+  role: product
+- name: files
+  role: product
+- name: contracts
+  role: product
+- name: guarantees
+  role: product
+- name: employment
+  role: product
+- name: category-types
+  role: reference data
+  fields: [type, literal]
+  served_by: 'GET /entities/category-types/'
+- name: institution
+  role: reference data
+  served_by: 'GET https://api.wealthreader.com/entities/ (live, not in components.schemas)'
+  fields: [code, name, logo, color, country_code, country_code_list, bic, psd2, personal_account, business_account, status, url_login, inputs]
+  note: >-
+    inputs describes the exact credential form per institution — document_type, user, password,
+    second_password, third_password, each with required, a localized name, a placeholder and a
+    validation_rule. Do not assume every institution asks for a username and a password: across the
+    public catalogue, user appears on 286, password on 232, second_password on 73, document_type on
+    19 and third_password on 7.
+- name: cards-transaction
+  role: real-time event object
+  fields: [id, payment_id, user_id, email, card_last4, entity_code, operation_date, value_date, amount, currency, description, merchant, category, gps, received_at]
+  note: >-
+    A separate lineage from the batch product model — integer id rather than uuid, its own cursor
+    (since_id), and it is both webhook payload and pollable resource.
+- name: cards-enrollment
+  role: real-time lifecycle object
+  fields: [enrollment_id, status, email, expires_at, confirmed_at, user_id]
+  states: [pending, active, expired, error]
+- name: statistics
+  role: response metadata
+  fields: [SESSION, execution_time, warnings, operation_id, token]
+relationships:
+- from: entity-data
+  to: user_information
+  type: has_one
+  via: payload.user_information
+- from: entity-data
+  to: [accounts, cards, loans, deposits, portfolios, receipts, leases, insurances, factoring, confirming, properties, files, contracts, guarantees, employment]
+  type: has_many
+  via: payload.<product_type>
+- from: entity-data
+  to: statistics
+  type: has_one
+  via: statistics
+- from: accounts
+  to: transactions
+  type: has_many
+  via: accounts[].transactions
+- from: cards
+  to: accounts
+  type: belongs_to
+  via: cards[].linked_account
+- from: loans
+  to: accounts
+  type: belongs_to
+  via: loans[].linked_account
+- from: deposits
+  to: accounts
+  type: belongs_to
+  via: deposits[].linked_account
+- from: portfolio_common
+  to: accounts
+  type: belongs_to
+  via: portfolio_common.linked_account
+- from: portfolio_funds
+  to: portfolio_common
+  type: composes
+  via: allOf $ref
+- from: portfolio_funds
+  to: portfolio_composition_funds
+  type: has_many
+  via: composition
+- from: portfolio_common
+  to: portfolio_transactions
+  type: has_many
+  via: transactions
+- from: accounts
+  to: owners
+  type: has_many
+  via: accounts[].owners
+- from: deposits
+  to: owners
+  type: has_many
+  via: deposits[].owners
+- from: loans
+  to: holders
+  type: has_many
+  via: loans[].holders
+- from: cards-enrollment
+  to: cards-transaction
+  type: has_many
+  via: user_id
+  note: The enrollment's confirmed user_id is the key the real-time transactions are attributed to.
+- from: cards-transaction
+  to: institution
+  type: belongs_to
+  via: entity_code
+- from: statistics
+  to: warning
+  type: has_many
+  via: statistics.warnings[]
+  note: 'Each warning names the product_type it applies to, so a partial failure is attributable.'
+product_types_enum:
+- user_information
+- accounts
+- portfolios
+- cards
+- receipts
+- loans
+- deposits
+- leases
+- insurances
+- factoring
+- confirming
+- properties
+- invoices
+- files
+- contracts
+- unknown
+gaps:
+- No global or cross-institution identity object; the end user exists only inside one read.
+- Product uuids are untyped bare hex — nothing in the value says what kind of object it is.
+- >-
+  The Cards (real time) objects use an entirely separate identity scheme (integer id, user_id,
+  payment_id) from the batch product model (40-hex uuid), and the spec never relates the two.

@@ -1,0 +1,73 @@
+generated: '2026-09-03'
+method: probed
+source: live GET probes of every /.well-known/ path on each host named in apis.yml and in the OpenAPI servers[] block
+note: >-
+  Every path 404s on both hosts. No WellKnown or SecurityTxt pointer is emitted in apis.yml,
+  because a recorded absence is not a served surface. api.wealthreader.com returns the API's own
+  JSON error envelope for unknown paths (HTTP 404 with a JSON body, Content-Type mislabelled
+  text/html by the edge); www.wealthreader.com returns an Apache HTML 404. Neither is a document.
+hosts:
+- host: www.wealthreader.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: api.wealthreader.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: www.allwr.io
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+apis_json:
+  path: /apis.json
+  host: www.wealthreader.com
+  status: 200
+  note: >-
+    Not a /.well-known/ document, but the provider does serve a real APIs.json 0.23 descriptor at
+    https://www.wealthreader.com/apis.json indexing every specification and document below.

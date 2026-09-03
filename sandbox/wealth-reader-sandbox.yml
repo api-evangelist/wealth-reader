@@ -1,0 +1,83 @@
+generated: '2026-09-03'
+method: searched
+source: >-
+  openapi/wealth-reader-api-for-ai.yaml (POST /entities/ token parameter description and
+  GET /entities/ show_only_tested) ; https://www.wealthreader.com/en/pricing/ ;
+  https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend.md ;
+  https://widget.wealthreader.com/demo-all/
+summary: >-
+  There is no separate sandbox host, no test-mode api_key and no key prefix that distinguishes test
+  from live. Testing is done against the PRODUCTION host with reserved mock token values, which is
+  a meaningfully weaker posture than a test/live key split: an agent cannot tell from a credential
+  whether it is about to touch real bank data.
+separate_host: false
+test_live_key_split: false
+key_prefixes: none published
+modes:
+- name: mock users
+  mechanism: reserved values for the `token` parameter on POST /entities/
+  host: https://api.wealthreader.com/ (production)
+  values:
+  - token: MOCKDATA
+    behaviour: Returns a canned OK response with normalised data.
+  - token: MOCKOTP
+    behaviour: Returns a response carrying an OTP second-factor challenge.
+  - token: MOCKLOGINKO
+    behaviour: Returns a login error.
+  source_quote: >-
+    Published verbatim in the OpenAPI `token` parameter description: "The following Mock users are
+    available: MOCKDATA, OK response; MOCKOTP, response with OTP challenge; MOCKLOGINKO, response
+    with login error".
+  coverage: >-
+    Three fixtures — happy path, second-factor challenge, credential failure. Enough to exercise
+    the three branches an integration must handle, and nothing beyond that. There is no fixture for
+    a multi-contract user (error 2020), a captcha challenge (2050-2053), an entity under
+    maintenance (3000) or a partial-coverage warning, all of which are documented failure modes.
+- name: additional mock data
+  mechanism: arranged with the technical team
+  source_quote: >-
+    POST /entities/ description: "It is possible to obtain Mock data. Check with the technical team
+    on how to do this."
+  self_serve: false
+  note: >-
+    Whatever richer fixtures exist are gated behind a human conversation. They are not documented
+    and not discoverable.
+- name: tested-entities filter
+  mechanism: 'GET /entities/?show_only_tested=1'
+  behaviour: >-
+    Returns only institutions whose connector is currently tested. The provider's own instruction
+    is "In production environments, always use 1" — so the default (0) is effectively the
+    permissive development view.
+  probed:
+    url: https://api.wealthreader.com/entities/?show_only_tested=1
+    status: 200
+- name: public demo
+  url: https://widget.wealthreader.com/demo-all/
+  auth: none
+  note: >-
+    A live widget demo linked from the introduction docs, showing the end-user flow without an
+    account.
+- name: dedicated environment
+  availability: contracted
+  note: >-
+    Several capabilities require a dedicated environment rather than the shared production host —
+    POST /batch/load/ ("not available on api.wealthreader.com") and the
+    fetch_transaction_details parameter both say so explicitly. Named on the pricing page as
+    "Managed Shared Environment" on Launch and "Dedicated and customizable infrastructure" on
+    Enterprise.
+plan_claim:
+  text: 'Sandbox and production'
+  source: https://www.wealthreader.com/en/pricing/ ("Whichever plan you choose" feature list)
+  assessment: >-
+    Recorded as the provider states it. What is actually documented publicly is mock token values
+    on the production host, not a distinct sandbox environment; the two may be the same thing under
+    different names, and the docs do not resolve it.
+test_clocks: none
+fixture_tooling: none
+trigger_tooling: none
+credentials_for_testing:
+  self_serve: false
+  note: >-
+    An api_key requires signup plus a mandatory technical onboarding session, and the widget domain
+    must be authorised in the client area before anything runs. Nobody can try this API in the next
+    five minutes without talking to the company.
