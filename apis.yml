@@ -1,0 +1,81 @@
+name: Wealth Reader
+description: 'Read-only bank aggregation API: accounts, transactions, cards, loans, deposits and investment
+  portfolios from banks, brokers and asset managers in 61 countries, over both the PSD2 regulatory channel
+  and a non-PSD2 channel that returns wealth data the regulatory APIs do not expose.'
+url: https://raw.githubusercontent.com/api-evangelist/wealth-reader/refs/heads/main/apis.yml
+created: '2026-08-24'
+modified: '2026-09-03'
+specificationVersion: '0.23'
+tags:
+- Bank Aggregation
+- Open Banking
+- PSD2
+- Financial Data
+- Account Aggregation
+- Investment Portfolios
+- Wealth Management
+- Banking
+- Fintech
+apis:
+- name: Wealth Reader API
+  description: 'Reads normalised financial data from an institution on behalf of a consenting end user.
+    Read-only: it never initiates payments.'
+  image: https://www.wealthreader.com/i/wealthreader.svg
+  humanURL: https://www.wealthreader.com/docs/en/introduction/
+  baseURL: https://api.wealthreader.com/
+  tags:
+  - Bank Aggregation
+  - Open Banking
+  - PSD2
+  - Financial Data
+  - Investment Portfolios
+  - ISIN
+  properties:
+  - type: OpenAPI
+    url: https://www.wealthreader.com/api-reference/api-for-ai.yaml
+  - type: OpenAPI
+    url: https://www.wealthreader.com/api-reference/api.yaml
+  - type: Documentation
+    url: https://www.wealthreader.com/docs/en/introduction/
+  - type: InteractiveDocumentation
+    url: https://www.wealthreader.com/api-reference/en/
+  - type: Postman
+    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
+  - type: Repository
+    url: https://github.com/Wealth-Reader/wealthreader-api-docs
+  - type: LLMsTxt
+    url: https://www.wealthreader.com/llms.txt
+  - type: Pricing
+    url: https://www.wealthreader.com/en/pricing/
+  - type: SupportedInstitutions
+    url: https://api.wealthreader.com/entities/
+  - type: ErrorCodes
+    url: https://api.wealthreader.com/error-codes/
+  - type: Support
+    url: https://help.wealthreader.com/
+  - type: Authentication
+    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
+  contact:
+  - FN: Wealth Reader Support
+    email: support@wealthreader.com
+maintainers:
+- FN: Wealth Reader S.L.
+  email: support@wealthreader.com
+  url: https://www.wealthreader.com/
+  X-linkedin: https://www.linkedin.com/company/wealthreader/
+image: https://www.wealthreader.com/i/wealthreader.svg
+common:
+- type: Documentation
+  url: https://www.wealthreader.com/docs/
+- type: SignUp
+  url: https://www.wealthreader.com/en/pricing/
+- type: Blog
+  url: https://blog.wealthreader.com/
+- type: PrivacyPolicy
+  url: https://www.wealthreader.com/es/politica-privacidad/
+x-source:
+  apis_json: https://www.wealthreader.com/apis.json
+  fetched: '2026-09-03'
+  via: api-search/inbox#13, submitted by the provider
+  note: Merged from the descriptor the provider serves on their own domain. Only the self url was re-pointed
+    at this record.
