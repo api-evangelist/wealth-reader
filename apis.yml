@@ -65,6 +65,8 @@ maintainers:
   X-linkedin: https://www.linkedin.com/company/wealthreader/
 image: https://www.wealthreader.com/i/wealthreader.svg
 common:
+- type: Website
+  url: https://www.wealthreader.com/
 - type: DomainSecurity
   url: security/wealth-reader-domain-security.yml
 - type: Documentation
