@@ -1,0 +1,572 @@
+openapi: 3.2.0
+info:
+  description: Regulatory APIs based on PSD2 provide access to certain financial information such as bank account balances and transactions.
+  version: 8.1.7
+  title: Wealth Reader Cards (real time) API
+  contact:
+    email: info@wealthreader.com
+servers:
+- description: Production Server
+  url: https://api.wealthreader.com/
+tags:
+- name: Cards (real time)
+  description: 'Real-time card expense synchronization from the Open Sync mobile app: per-customer employee pre-registration, signed webhooks (card_transaction.created / card_enrollment.confirmed), and REST query / backfill.'
+paths:
+  /cards/webhook/:
+    post:
+      tags:
+      - Cards (real time)
+      summary: Register or rotate the real-time cards webhook
+      description: 'Creates or updates the webhook URL of the customer for the card_transaction.created and card_enrollment.confirmed events (see the cards-webhook-delivery schema for the delivery format and signature). On first setup, or when rotate_secret is true, a new webhook_secret (64 hex characters) is generated and returned once; in any other case webhook_secret comes back as null in the response and cannot be retrieved again. webhook_url must always be https:// and must resolve to a publicly routable host: localhost, private, loopback, link-local (including the cloud metadata address), CGNAT, multicast and reserved addresses are rejected, in any notation (hexadecimal, decimal, octal, short dotted or IPv4-mapped IPv6), and so is a hostname that does not resolve at all. The same check runs again right before every delivery, not only at registration: if the host is repointed at an internal address afterwards (DNS rebinding) the delivery is closed as failed with response_excerpt "blocked_host". Sending null in webhook_url disables webhooks for that customer; omitting the field leaves the stored URL untouched, which is how the secret is rotated without changing the URL.'
+      operationId: cardsWebhookRegister
+      x-webhook-delivery:
+        description: Body that Wealthreader POSTs to webhook_url for each event of this customer. Documented here so the delivery schema stays reachable from the operation that registers the webhook.
+        schema:
+          $ref: '#/components/schemas/cards-webhook-delivery'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - api_key
+              properties:
+                api_key:
+                  type: string
+                  description: API key of the customer.
+                  example: a1b2c3d4
+                webhook_url:
+                  type:
+                  - string
+                  - 'null'
+                  description: https:// URL that will receive the events, on a publicly routable host that resolves in DNS. null disables webhooks; omitting the field leaves the stored URL unchanged.
+                  example: https://cliente.example.com/webhooks/wealthreader-cards
+                rotate_secret:
+                  type: boolean
+                  default: false
+                  description: When true, generates and returns a new webhook_secret.
+              example:
+                api_key: a1b2c3d4
+                webhook_url: https://cliente.example.com/webhooks/wealthreader-cards
+                rotate_secret: false
+      responses:
+        '200':
+          description: Webhook registered or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  payload:
+                    type: object
+                    properties:
+                      webhook_url:
+                        type:
+                        - string
+                        - 'null'
+                      webhook_secret:
+                        type:
+                        - string
+                        - 'null'
+                        description: Only filled in on creation or rotation; null in any other case.
+                      active:
+                        type: boolean
+              example:
+                success: true
+                payload:
+                  webhook_url: https://cliente.example.com/webhooks/wealthreader-cards
+                  webhook_secret: 9f1c2b3a4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8
+                  active: true
+        '400':
+          description: Invalid webhook_url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: invalid_webhook_url
+                  message:
+                    type: string
+        '401':
+          description: Invalid or inactive api_key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: unauthorized
+                  message:
+                    type: string
+  /cards/enrollments/:
+    post:
+      tags:
+      - Cards (real time)
+      summary: Pre-register the email of an employee
+      description: 'Creates an enrollment request in pending status with a short expiry (ttl_minutes, 20 by default, between 1 and 60) for the employee to confirm by opening the mobile app and entering that email (POST /user-sync-validation/, no contract change for the app). It is idempotent: repeating the call for the same (api_key, email) while it is still pending and not expired returns the same request. If the email is already linked to the calling customer, it returns status "active" directly. If it is already linked to a different customer, it returns 409. Rate limit: at most 60 calls to this endpoint per api_key every 60 seconds, counting every attempt and not only the ones that create a row, checked before anything else so the answers that create nothing (200 already active, 409 linked to another customer, 400) cannot be walked as an enumeration oracle. Exceeding it returns 429 with code rate_limited.'
+      operationId: cardsEnrollmentsCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - api_key
+              - email
+              properties:
+                api_key:
+                  type: string
+                  description: API key of the customer.
+                  example: a1b2c3d4
+                email:
+                  type: string
+                  format: email
+                  description: Email of the employee to pre-register.
+                  example: empleado@cliente.com
+                ttl_minutes:
+                  type: integer
+                  default: 20
+                  minimum: 1
+                  maximum: 60
+                  description: Minutes the request stays valid before expiring.
+              example:
+                api_key: a1b2c3d4
+                email: empleado@cliente.com
+                ttl_minutes: 20
+      responses:
+        '200':
+          description: Request created, reused or already active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cards-enrollment-response'
+              example:
+                success: true
+                payload:
+                  enrollment_id: 0f3a9c7b1d2e4f5a6b7c8d9e0f1a2b3c
+                  status: pending
+                  email: empleado@cliente.com
+                  expires_at: '2026-07-11T14:22:11+02:00'
+                  confirmed_at: null
+                  user_id: null
+        '400':
+          description: Invalid parameters (email or ttl_minutes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: invalid_email
+                  message:
+                    type: string
+        '401':
+          description: Invalid or inactive api_key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: unauthorized
+                  message:
+                    type: string
+        '409':
+          description: The email is already linked to another customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: email_linked_to_other_client
+                  message:
+                    type: string
+        '429':
+          description: Too many calls to this endpoint for this api_key in the last 60 seconds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: rate_limited
+                  message:
+                    type: string
+    get:
+      tags:
+      - Cards (real time)
+      summary: Check the status of an enrollment
+      description: Read-only status of an enrollment request. It has no side effects on card users, unlike POST /user-sync-validation/, which does confirm. The only write allowed is lazily marking a pending enrollment whose expiry date has already passed as expired.
+      operationId: cardsEnrollmentsStatus
+      parameters:
+      - name: api_key
+        in: query
+        required: true
+        schema:
+          type: string
+        description: API key of the customer. Note it travels in the query string, so it ends up in access logs and intermediary proxies.
+        example: a1b2c3d4
+      - name: enrollment_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Identifier returned by POST /cards/enrollments/.
+        example: 0f3a9c7b1d2e4f5a6b7c8d9e0f1a2b3c
+      responses:
+        '200':
+          description: Enrollment status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/cards-enrollment-response'
+              example:
+                success: true
+                payload:
+                  enrollment_id: 0f3a9c7b1d2e4f5a6b7c8d9e0f1a2b3c
+                  status: active
+                  email: empleado@cliente.com
+                  expires_at: '2026-07-11T14:22:11+02:00'
+                  confirmed_at: '2026-07-11T14:10:03+02:00'
+                  user_id: e9f4c2a1b3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7
+        '401':
+          description: Invalid or inactive api_key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: unauthorized
+                  message:
+                    type: string
+        '404':
+          description: The enrollment does not exist or does not belong to this api_key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: not_found
+                  message:
+                    type: string
+  /cards/transactions/:
+    get:
+      tags:
+      - Cards (real time)
+      summary: Query / backfill real-time card transactions
+      description: Returns the real-time card transactions received for the employees linked to this api_key, ordered by ascending id. Meant both for periodic backfill (poll with date_from/date_to and paginate with since_id) and for one-off queries. This is the same transaction object carried by the card_transaction.created webhook.
+      operationId: cardsTransactionsList
+      parameters:
+      - name: api_key
+        in: query
+        required: true
+        schema:
+          type: string
+        description: API key of the customer. Note it travels in the query string, so it ends up in access logs and intermediary proxies.
+        example: a1b2c3d4
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 'YYYY-MM-DD, on the operation date. Default: today minus 3 days.'
+        example: '2026-07-01'
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 'YYYY-MM-DD, on the operation date. Default: today.'
+        example: '2026-07-11'
+      - name: email
+        in: query
+        required: false
+        schema:
+          type: string
+          format: email
+        description: Filters by the email of the employee.
+        example: empleado@cliente.com
+      - name: since_id
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Exclusive cursor on the transaction id, for pagination.
+        example: 216
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 500
+          maximum: 1000
+        description: Maximum number of transactions to return (500 by default, 1000 max).
+        example: 500
+      responses:
+        '200':
+          description: Transactions found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  payload:
+                    type: object
+                    properties:
+                      transactions:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/cards-transaction'
+                      next_since_id:
+                        type:
+                        - integer
+                        - 'null'
+                        description: Last id returned when limit was reached; null when there are no more pages.
+              example:
+                success: true
+                payload:
+                  transactions:
+                  - id: 217
+                    payment_id: 550e8400-e29b-41d4-a716-446655440000
+                    user_id: e9f4c2a1b3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7
+                    email: empleado@cliente.com
+                    card_last4: '1234'
+                    entity_code: bbva
+                    operation_date: '2026-07-11'
+                    value_date: '2026-07-11'
+                    amount: -57.6
+                    currency: null
+                    description: SAKE RESTAURANTE
+                    merchant: SAKE RESTAURANTE
+                    category: Other
+                    gps:
+                      lat: 39.4661559
+                      lon: -0.3679207
+                    received_at: '2026-07-11T14:02:11+02:00'
+                  next_since_id: null
+        '400':
+          description: Invalid parameters (dates, since_id, limit or email)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: invalid_date_from
+                  message:
+                    type: string
+        '401':
+          description: Invalid or inactive api_key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  code:
+                    type: string
+                    example: unauthorized
+                  message:
+                    type: string
+components:
+  schemas:
+    cards-transaction:
+      type: object
+      description: Real-time card transaction object. Same format returned by GET /cards/transactions/ and sent in the card_transaction.created webhook.
+      properties:
+        id:
+          type: integer
+        payment_id:
+          type: string
+        user_id:
+          type: string
+          description: Card user uuid.
+        email:
+          type: string
+          format: email
+        card_last4:
+          type:
+          - string
+          - 'null'
+        entity_code:
+          type:
+          - string
+          - 'null'
+        operation_date:
+          type: string
+          format: date
+        value_date:
+          type: string
+          format: date
+        amount:
+          type: number
+          format: float
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Always null today; the app does not send a currency.
+        description:
+          type: string
+        merchant:
+          type: string
+        category:
+          type: string
+        gps:
+          type:
+          - object
+          - 'null'
+          properties:
+            lat:
+              type: number
+              format: float
+            lon:
+              type: number
+              format: float
+        received_at:
+          type: string
+          format: date-time
+    cards-webhook-delivery:
+      type: object
+      description: 'Body sent by Wealthreader to the webhook_url of the customer (POST /cards/webhook/) for the card_transaction.created and card_enrollment.confirmed events. Headers: Content-Type: application/json, User-Agent: Wealthreader-Cards/1.0, Origin: https://api.wealthreader.com, X-WR-Event: <event>, X-WR-Delivery: <delivery_id>, X-WR-Signature: sha256=<hex of hmac_sha256(raw_body, webhook_secret)>. The customer must verify X-WR-Signature with a constant-time comparison (hash_equals or equivalent) before trusting the body. Success = HTTP 2xx; otherwise Wealthreader retries with backoff 1 min, 5 min, 30 min, 2 h and 24 h, resending the exact same body, and after the last failed attempt the delivery is marked failed for good. If the secret is rotated while retries are still pending, those retries are signed with the new secret.
+
+        '
+      required:
+      - event
+      - delivery_id
+      - sent_at
+      - api_key
+      - data
+      properties:
+        event:
+          type: string
+          enum:
+          - card_transaction.created
+          - card_enrollment.confirmed
+        delivery_id:
+          type: string
+          description: 32 hex characters. Matches the X-WR-Delivery header.
+        sent_at:
+          type: string
+          format: date-time
+        api_key:
+          type: string
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/cards-transaction'
+          - $ref: '#/components/schemas/cards-enrollment'
+          description: cards-transaction for card_transaction.created; cards-enrollment (in active status) for card_enrollment.confirmed.
+      example:
+        event: card_transaction.created
+        delivery_id: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d
+        sent_at: '2026-07-11T14:02:12+02:00'
+        api_key: a1b2c3d4
+        data:
+          id: 217
+          payment_id: 550e8400-e29b-41d4-a716-446655440000
+          user_id: e9f4c2a1b3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7
+          email: empleado@cliente.com
+          card_last4: '1234'
+          entity_code: bbva
+          operation_date: '2026-07-11'
+          value_date: '2026-07-11'
+          amount: -57.6
+          currency: null
+          description: SAKE RESTAURANTE
+          merchant: SAKE RESTAURANTE
+          category: Other
+          gps:
+            lat: 39.4661559
+            lon: -0.3679207
+          received_at: '2026-07-11T14:02:11+02:00'
+    cards-enrollment:
+      type: object
+      description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
+      properties:
+        enrollment_id:
+          type:
+          - string
+          - 'null'
+          description: 32 hex characters. Identifier returned by POST /cards/enrollments/.
+        status:
+          type: string
+          enum:
+          - pending
+          - active
+          - expired
+          - error
+        email:
+          type: string
+          format: email
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        confirmed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        user_id:
+          type:
+          - string
+          - 'null'
+          description: Card user uuid once confirmed; null while it is pending.
+    cards-enrollment-response:
+      type: object
+      properties:
+        success:
+          type: boolean
+        payload:
+          $ref: '#/components/schemas/cards-enrollment'

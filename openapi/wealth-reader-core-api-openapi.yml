@@ -1,0 +1,3257 @@
+openapi: 3.2.0
+info:
+  description: Regulatory APIs based on PSD2 provide access to certain financial information such as bank account balances and transactions.
+  version: 8.1.7
+  title: Wealth Reader Core API
+  contact:
+    email: info@wealthreader.com
+servers:
+- description: Production Server
+  url: https://api.wealthreader.com/
+tags:
+- name: Core
+  description: Core API required for standard integrations
+paths:
+  /entities/:
+    post:
+      tags:
+      - Core
+      summary: Retrieves financial assets and their composition details
+      description: Retrieves financial assets and details of their composition including investment portfolios (stocks, funds, bonds, pension plans, alternative investments, crypto), credit cards, insurance, and loans. Includes ownership information for each asset as well as unique identifiers that facilitate data processing. It is possible to obtain Mock data. Check with the technical team on how to do this.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  description: Identifies the client in the service
+                  example: a1b2c3d4e5f6g7h8i9j0
+                code:
+                  type: string
+                  description: Name of the entity. The complete list is available with GET
+                  example: caixabank
+                token:
+                  type: string
+                  description: 'Identifies the custodied credential. The flow by which the token has been obtained is described in the ''Widget Integration Guide'' document. The following Mock users are available: MOCKDATA, OK response; MOCKOTP, response with OTP challenge; MOCKLOGINKO, response with login error'
+                  example: MOCKDATA
+                product_types:
+                  type: string
+                  enum:
+                  - accounts
+                  - portfolios
+                  - cards
+                  - receipts
+                  - loans
+                  - factoring
+                  - confirming
+                  - properties
+                  - invoices
+                  - files
+                  - deposits
+                  - leases
+                  - insurances
+                  description: List of product types from which information is to be retrieved. Accepts multiple values separated by commas.
+                  example: accounts,portfolios
+                only_balances:
+                  type: boolean
+                  default: false
+                  description: 'Indicates whether to obtain only the balances of the products instead of all available information. Default value: false.'
+                  example: false
+                fetch_transaction_details:
+                  type: boolean
+                  default: false
+                  description: 'Indicates whether extended transaction details should be retrieved when the entity connector supports it. IMPORTANT: Enabling it implies performing one or more additional navigations per transaction to enrich the returned information. This will inevitably and significantly increase the execution time. The number of additional navigations grows with the volume of transactions. It is recommended to enable it only when you are certain that a level of detail beyond the one returned by default is required. The retrieved details are inserted into the `additional_info` key at the level of each transaction. The use of this parameter requires a dedicated environment.'
+                  example: false
+                date_from:
+                  type: string
+                  format: date
+                  description: Date from which transactions are requested, in YYYY-MM-DD format. Must be a date before today.
+                  example: '2024-01-01'
+                date_to:
+                  type: string
+                  format: date
+                  description: This only applies to restricting by future dates for products loan and confirming, in YYYY-MM-DD format. The date must be later than today
+                  example: '2025-12-31'
+                required_products_schema:
+                  type: string
+                  description: Required products schema. Indicates the accounts or cards from which data is desired, with additional configurations.
+                  example: '{"ACCOUNTS":{"0ae4d722b1c82feeafb4b36b2893230444071335":{"only_balances":false,"add_pdf_from_uuids":["90763109952d4f2ebece8dceca8254078c5384a0"],"date_from":"2024-04-03"}},"CARDS":{"957e6f63546f3fecacce80192b6f7436496dc057":{}}}'
+                add_pdf_from_uuids:
+                  type: string
+                  description: Accepts transaction uuids separated by commas. Parameter that is only taken into account if product_types is ALL or includes accounts. Adds the PDF document associated with each of the requested bank transactions.
+                  example: 20966426721d0885ef9d4b95535e1d3198936f16,8772d6c978d37d7af83094abf380b8b703e94105,e59296b79e7f80cec26679d2c65883025fd59295
+                otp_method:
+                  type: string
+                  description: Selects which second-factor delivery channel to use when the API returned error code 2017 or 20171 (multiple OTP methods available). Call again with the same session identifier from that response and set this form field to the exact value of the otp_method property from one object in statistics.otpMethods (not the array index). Omit on the first credential-based request; send after the end user chooses a method. The example value below is illustrative only—always copy the string returned in statistics.otpMethods for your entity (wording may be OTP_SMS ****1234, SMS *****1234, or another label depending on the bank).
+                  example: OTP_SMS ****1234
+            example:
+              api_key: a1b2c3d4e5f6g7h8i9j0
+              code: caixabank
+              token: 1234Asdf
+              product_types: accounts,portfolios
+              only_balances: false
+              date_from: '2024-01-01'
+              date_to: '2025-12-31'
+              required_products_schema: '{"ACCOUNTS":{"0ae4d722b1c82feeafb4b36b2893230444071335":{"only_balances":false,"add_pdf_from_uuids":["90763109952d4f2ebece8dceca8254078c5384a0"],"date_from":"2024-04-03"}},"CARDS":{"957e6f63546f3fecacce80192b6f7436496dc057":{}}}'
+              add_pdf_from_uuids: 20966426721d0885ef9d4b95535e1d3198936f16,8772d6c978d37d7af83094abf380b8b703e94105
+      x-codeSamples:
+      - lang: cURL
+        label: CLI
+        source: "curl -X POST 'https://api.wealthreader.com/entities/' \\\n  -H 'Content-Type: application/x-www-form-urlencoded' \\\n  -d 'api_key=a1b2c3d4e5f6g7h8i9j0' \\\n  -d 'code=caixabank' \\\n  -d 'token=MOCKDATA' \\\n  -d 'product_types=accounts,portfolios' \\\n  -d 'only_balances=false' \\\n  -d 'date_from=2024-01-01' \\\n  -d 'date_to=2025-12-31' \\\n  -d 'required_products_schema={\"ACCOUNTS\":{\"0ae4d722b1c82feeafb4b36b2893230444071335\":{\"only_balances\":false,\"add_pdf_from_uuids\":[\"90763109952d4f2ebece8dceca8254078c5384a0\"],\"date_from\":\"2024-04-03\"}},\"CARDS\":{\"957e6f63546f3fecacce80192b6f7436496dc057\":{}}}' \\\n  -d 'add_pdf_from_uuids=20966426721d0885ef9d4b95535e1d3198936f16,8772d6c978d37d7af83094abf380b8b703e94105'\n"
+      responses:
+        '200':
+          description: data obtained from the entity
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/entity-data'
+        '400':
+          description: error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+      operationId: postEntities
+      x-operation-id-source: derived
+  /entities/category-types/:
+    get:
+      tags:
+      - Core
+      summary: List of transaction types
+      parameters:
+      - name: lang
+        in: query
+        description: Response language
+        required: false
+        schema:
+          type: string
+          default: es
+          enum:
+          - es
+          - en
+      responses:
+        '200':
+          description: Category types with their description
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/category-types'
+        '400':
+          description: error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+      operationId: getEntitiesCategoryTypes
+      x-operation-id-source: derived
+  /tokens/:
+    post:
+      tags:
+      - Core
+      summary: Query tokens associated with an api_key
+      description: Use this method to query all tokens linked to a specific api_key. Results are returned in blocks of 500 tokens per page.
+      operationId: queryTokensByApiKey
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  description: api_key to identify the client in the service
+                  example: a1b2c3d4e5f6g7h8i9j0
+                page:
+                  type: number
+                  description: Specify the **page number** you want to retrieve. Each page contains up to 500 tokens. If not provided, the default value is `1`.
+                  example: 2
+            example:
+              api_key: a1b2c3d4e5f6g7h8i9j0
+              page: 1
+      responses:
+        '200':
+          description: List of tokens associated with the provided api_key
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    token:
+                      type: string
+                      description: Token
+                    entity_code:
+                      type: string
+                      description: Entity code of the token
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: Token creation date
+                    accesed_at:
+                      type: string
+                      format: date-time
+                      description: Last access date of the token
+                    times_accesed:
+                      type: integer
+                      description: Number of times the token has been accessed
+                    latest_code:
+                      type: integer
+                      description: Most recent response code
+                    latest_session:
+                      type: string
+                      description: ID of the last session associated with the token in hexadecimal format
+        '400':
+          description: Bad request, invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized, incorrect api_key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /tokens/revoke/:
+    post:
+      tags:
+      - Core
+      summary: Revoke a token
+      description: This method allows revoking an existing token to disauthorize future API access requests.
+      operationId: revokeToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  description: Identifies the client in the service
+                token:
+                  type: string
+                  description: Token to be revoked.
+      responses:
+        '200':
+          description: Token successfully revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Token successfully revoked.
+        '400':
+          description: Bad request, invalid parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized, invalid token or already revoked
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /tokens/reasign/:
+    post:
+      tags:
+      - Core
+      summary: Reassign a token to a different api_key
+      description: This method allows reassigning a token from one api_key to another.
+      operationId: reasignToken
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                api_key_source:
+                  type: string
+                  description: api_key from which to reassign the token.
+                  example: a1b2c3d4e5f6g7h8i9j0
+                api_key_target:
+                  type: string
+                  description: api_key to which to reassign the token.
+                  example: b2c3d4e5f6g7h8i9j0k1
+                token:
+                  type: string
+                  description: Token to be reassigned.
+                  example: FRJ0mHlaqZwLzu
+            example:
+              api_key_source: a1b2c3d4e5f6g7h8i9j0
+              api_key_target: b2c3d4e5f6g7h8i9j0k1
+              token: FRJ0mHlaqZwLzu
+      responses:
+        '200':
+          description: Token successfully reassigned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Token successfully reassigned.
+        '400':
+          description: Bad request, invalid parameters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+        '401':
+          description: Unauthorized, incorrect api_key
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /domains/:
+    post:
+      tags:
+      - Core
+      summary: Add a new domain
+      description: Adds the association between the domain that will host the widget and the destination webhook. To edit or test your domains, use https://www.wealthreader.com/clients/
+      operationId: addDomain
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                method:
+                  type: string
+                  description: Method to execute.
+                  example: add
+                api_key:
+                  type: string
+                  description: User's API key.
+                  example: a1b2c3d4e5f6g7h8i9j0
+                domain:
+                  type: string
+                  description: Domain to add.
+                  example: http://desarrollo.cliente.es
+                url_callback:
+                  type: string
+                  description: URL for callback.
+                  example: https://desarrollo.cliente.es/hooks/wealthreader
+                tokenize:
+                  type: string
+                  enum:
+                  - '1'
+                  - '0'
+                  description: 'Controls whether the widget initiates a tokenization flow:
+
+                    * `1` - The user authenticates with the financial institution (login, consent, 2FA if required) and a reusable token is returned for future queries
+
+                    * `0` - No tokenization is performed. The previously obtained token value must be included in the request
+
+                    '
+                  example: '1'
+              required:
+              - method
+              - api_key
+              - domain
+              - url_callback
+              - tokenize
+            example:
+              method: add
+              api_key: a1b2c3d4e5f6g7h8i9j0
+              domain: https://www.cliente.com
+              url_callback: https://www.cliente.com/webhooks/wealthreader
+              tokenize: '1'
+      responses:
+        '200':
+          description: Domain successfully added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '400':
+          description: Bad request, invalid parameters
+        '401':
+          description: Unauthorized, incorrect API key
+        '500':
+          description: Internal server error
+  /error-codes/:
+    get:
+      tags:
+      - Core
+      summary: List of error codes
+      description: List of error codes. Pay special attention to the fact that not all error codes should receive the same treatment from your application. For an incorrect password error, you should not retry the call with the same parameters, but for an error indicating that the entity is under maintenance, you can retry. Request a technical session with our team to resolve any questions about error management.
+      parameters:
+      - name: lang
+        in: query
+        description: Response language
+        required: false
+        schema:
+          type: string
+          default: es
+          enum:
+          - es
+          - en
+      responses:
+        '200':
+          description: Error codes with their description, possible cause, and how to proceed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/warning-error-codes'
+        '400':
+          description: error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+      operationId: getErrorCodes
+      x-operation-id-source: derived
+  /warning-codes/:
+    get:
+      tags:
+      - Core
+      summary: List of warning codes
+      description: List of warning codes.
+      parameters:
+      - name: lang
+        in: query
+        description: Response language
+        required: false
+        schema:
+          type: string
+          default: es
+          enum:
+          - es
+          - en
+      responses:
+        '200':
+          description: Error codes with their description, possible cause, and how to proceed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/warning-error-codes'
+        '400':
+          description: error
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/error'
+      operationId: getWarningCodes
+      x-operation-id-source: derived
+components:
+  schemas:
+    employment:
+      type: object
+      description: Employment history / work life and contributions
+      properties:
+        summary:
+          type: object
+          description: Aggregated summary of employment history
+          properties:
+            totalDaysRegistered:
+              type: integer
+              description: Total days registered
+              example: 8912
+            daysInMultipleActivity:
+              type: integer
+              description: Days in multiple activity
+              example: 130
+            daysContributedForBenefits:
+              type: integer
+              description: Days contributed for benefits
+              example: 8782
+            totalTimeEquivalence:
+              type: string
+              description: Total time equivalence
+              example: 24 años, 0 meses y 17 días.
+        periods:
+          type: array
+          description: List of employment and similar periods (employment, unemployment, self-employment, etc.)
+          items:
+            type: object
+            required:
+            - employer
+            - regime
+            - contract
+            - category
+            - actualStartDate
+            - startDate
+            - endDate
+            - contributedDays
+            properties:
+              employer:
+                type: string
+                example: TRABAJADOR AUTONOMO
+              regime:
+                type: string
+                example: AUTONOMO
+              contract:
+                type: string
+                example: INDEFINIDO.TIEMPO COMPLETO.ORDINARIO
+              category:
+                type: string
+                example: INGENIEROS LICENCIADOS
+              actualStartDate:
+                type: string
+                format: date
+                example: '2022-11-10'
+              startDate:
+                type: string
+                format: date
+                example: '2022-11-10'
+              endDate:
+                type: string
+                description: End date or 'Actual' if the period is ongoing
+                example: Actual
+              contributedDays:
+                type: integer
+                description: Days contributed within the period
+                example: 1062
+    insurances:
+      type: array
+      items:
+        type: object
+        description: Insurance policies
+        required:
+        - uuid
+        - name
+        - currency
+        - coverage_category
+        - status
+        properties:
+          uuid:
+            type: string
+            description: Unique identifier, in relation to the user, assigned by Wealth Reader
+            example: 0ae4d722b1c82feeafb4b36b2893230444071335
+          code:
+            type: string
+            description: Bank's internal identifier of the policy
+            example: '969032717626333'
+          coverage_category:
+            type: string
+            enum:
+            - property
+            - personal
+            - services
+            description: Insurance coverage category
+            example: property
+          name:
+            type: string
+            description: Commercial name of the policy
+            example: MyBox Hogar
+          currency:
+            type: string
+            description: Currency in ISO 4217 format
+            example: EUR
+          insured_value:
+            type: object
+            description: Insured item and its insured amount
+            properties:
+              name:
+                type: string
+                description: Description of the insured item
+                example: PISO / Residencia secundaria 46023 VALENCIA
+              value:
+                type: number
+                description: Insured amount
+                example: 250000
+          insured_concepts:
+            type: array
+            description: List of insured concepts (coverages) and their insured amounts
+            items:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Insured concept / coverage
+                  example: Fire
+                value:
+                  type: number
+                  description: Insured amount for this concept
+                  example: 25000
+          constitution_date:
+            type: string
+            format: date
+            description: Policy start date
+            example: '2020-01-01'
+          expiration_date:
+            type: string
+            format: date
+            description: Policy expiration date
+            example: '2021-01-01'
+          next_payment_date:
+            type: string
+            format: date
+            description: Date of the next premium payment
+            example: '2020-02-01'
+          next_installment:
+            type: number
+            description: Amount of the next premium payment
+            example: 800
+          frequency:
+            type: string
+            enum:
+            - monthly
+            - annual
+            description: Premium payment frequency
+            example: monthly
+          status:
+            type: string
+            enum:
+            - active
+            - inactive
+            description: Policy status
+            example: active
+          linked_account:
+            type: string
+            description: IBAN of the account linked to the premium payment
+            example: ES4914651234561234567890
+          owner:
+            type: object
+            description: Policyholder
+            properties:
+              ID:
+                type: string
+                description: Policyholder identification document
+                example: 07133834N
+              name:
+                type: string
+                description: Policyholder name
+                example: LUIS GARCIA BAQUERO
+          claims:
+            type: array
+            description: Claims filed on the policy
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier of the claim assigned by Wealth Reader
+                  example: 8772d6c978d37d7af83094abf380b8b703e94105
+                claim_code:
+                  type: string
+                  description: Claim identifier assigned by the entity
+                  example: 0122074354T2
+                incident_date:
+                  type: string
+                  format: date
+                  description: Date on which the incident occurred
+                  example: '2023-05-13'
+                claimed_date:
+                  type: string
+                  format: date
+                  description: Date on which the claim was filed
+                  example: '2023-05-15'
+                description:
+                  type: string
+                  description: Description of the claim
+                  example: Rotura de lunas por impacto de objetos
+                status:
+                  type: string
+                  enum:
+                  - in_process
+                  - accepted
+                  - rejected
+                  description: Claim status
+                  example: in_process
+    cards:
+      type: array
+      items:
+        type: object
+        description: Credit, debit, and prepaid cards
+        required:
+        - subtype
+        - uuid
+        - code
+        - name
+        - currency
+        - balances
+        properties:
+          status:
+            type: string
+            enum:
+            - active
+            - inactive
+            - cancelled
+            - locked
+            example: active
+          subtype:
+            type: string
+            enum:
+            - credit
+            - debit
+            - prepaid
+            example: credit
+          uuid:
+            type: string
+            example: aefd89eade0a6a09d9b8eab4c22da6a6a37632e6
+          code:
+            type: string
+            description: Numbering with PCI compliance obfuscation
+            example: 516097********1234
+          name:
+            type: string
+            example: Credit Card
+          currency:
+            type: string
+            example: EUR
+          next_payment_date:
+            type: string
+            format: date
+            description: Next payment date for credit cards
+            example: '2023-01-05'
+          anual_interest:
+            type: number
+            description: Annual interest rate
+            example: 17.48
+          tae:
+            type: number
+            description: Annual Equivalent Rate (APR)
+            example: 18.95
+          balances:
+            type: object
+            properties:
+              available:
+                type: number
+                example: 3980
+              limit:
+                type: number
+                example: 4000
+              disposed:
+                type: number
+                example: 20
+          linked_account:
+            type: string
+            example: ES4021005321592566566159
+          owner:
+            $ref: '#/components/schemas/owners'
+          additional_info:
+            $ref: '#/components/schemas/additional_info'
+          transactions:
+            type: array
+            items:
+              type: object
+              required:
+              - uuid
+              - value_date
+              - amount
+              - description
+              properties:
+                uuid:
+                  type: string
+                  example: 78ceedca9cd9d2f2bfbb2439795ab6a1fcefc12b
+                settled:
+                  type: boolean
+                  description: Indicates whether it is a transaction settled by the bank, which means it will not change in subsequent readings.
+                  example: false
+                operation_date:
+                  type: string
+                  format: date
+                  description: Transaction operation date
+                  example: '2022-12-28'
+                value_date:
+                  type: string
+                  format: date
+                  example: '2022-12-28'
+                amount:
+                  type: number
+                  example: -20
+                currency:
+                  type: string
+                  description: Transaction currency
+                  example: EUR
+                exchange_rate:
+                  type: number
+                  description: Exchange rate applied to the transaction
+                  example: 1
+                description:
+                  type: string
+                  example: Pago en AMZN MKTP ES123CM0ZM4
+                categorization:
+                  type:
+                  - object
+                  - 'null'
+                  description: Categorization information if available
+                  properties:
+                    type:
+                      type: integer
+                      example: 0
+                      description: Category type according to the /entities/category-types/ method
+                additional_info:
+                  $ref: '#/components/schemas/additional_info'
+    leases:
+      type: array
+      items:
+        type: object
+        description: Leasing and renting contracts
+        required:
+        - subtype
+        - uuid
+        - contract_number
+        - provider
+        - currency
+        - start_date
+        - end_date
+        - payment_frequency
+        - status
+        - holders
+        - asset
+        - financials
+        - installments
+        properties:
+          subtype:
+            type: string
+            enum:
+            - leasing
+            - renting
+            example: leasing
+          uuid:
+            type: string
+            description: Unique identifier assigned by Wealth Reader
+            example: 1f0a0b1c2d3e4f5a6b7c8d9e0f1234567890abcd
+          contract_number:
+            type: string
+            example: L-2024-000123
+          name:
+            type: string
+            description: Commercial name of the contract if provided by the entity
+            example: BMW 3 Series Leasing
+          provider:
+            type: object
+            description: Lessor/financier
+            properties:
+              name:
+                type: string
+                example: Banco XYZ Renting, S.A.
+              tax_id:
+                type: string
+                example: A12345678
+          currency:
+            type: string
+            example: EUR
+          start_date:
+            type: string
+            format: date
+            example: '2024-10-01'
+          end_date:
+            type: string
+            format: date
+            example: '2028-09-30'
+          term_months:
+            type: integer
+            description: Total duration in months
+            example: 48
+          payment_frequency:
+            type: string
+            enum:
+            - monthly
+            - quarterly
+            - semiannual
+            - annual
+            example: monthly
+          status:
+            type: string
+            enum:
+            - active
+            - finished
+            - cancelled
+            - in_arrears
+            example: active
+          linked_account:
+            type: string
+            description: IBAN for charges if provided by the bank
+            example: ES4021005321592566566159
+          holders:
+            $ref: '#/components/schemas/owners'
+          asset:
+            type: object
+            description: Leased asset
+            required:
+            - category
+            properties:
+              category:
+                type: string
+                enum:
+                - vehicle
+                - industrial_equipment
+                - it_equipment
+                - real_estate
+                - other
+                example: vehicle
+              description:
+                type: string
+                example: BMW 320d Touring
+              vin:
+                type: string
+                description: For vehicles, if available
+                example: WBA8G51040K123456
+              license_plate:
+                type: string
+                example: 1234-ABC
+              brand:
+                type: string
+                example: BMW
+              model:
+                type: string
+                example: 320d
+              year:
+                type: integer
+                example: 2024
+              serial_number:
+                type: string
+                description: For machinery/equipment
+              address:
+                type: string
+                description: For real estate
+          financials:
+            type: object
+            description: Financial terms
+            properties:
+              capital_financed:
+                type: number
+                description: Financed base (only leasing; optional in renting)
+                example: 35000
+              nominal_interest_rate:
+                type: number
+                description: Nominal interest rate if applicable (more common in leasing)
+                example: 4.25
+              apr_tae:
+                type: number
+                description: APR/TAE if the entity publishes it
+                example: 4.38
+              discount_rate:
+                type: number
+                description: Discount rate (IFRS 16), if available
+              initial_fee:
+                type: number
+                description: Down payment/initial fee
+                example: 3000
+              security_deposit:
+                type: number
+                description: Security deposit if exists
+                example: 1000
+              residual_value:
+                type: number
+                description: Residual value/purchase option (typical in leasing)
+                example: 12000
+              purchase_option:
+                type: boolean
+                description: Purchase option exists at the end
+                example: true
+              services_included:
+                type: object
+                description: More common in renting
+                properties:
+                  maintenance:
+                    type: boolean
+                    example: true
+                  insurance:
+                    type: boolean
+                    example: true
+                  roadside_assistance:
+                    type: boolean
+                    example: true
+                  tires:
+                    type: boolean
+                    example: false
+              vat_included:
+                type: boolean
+                description: Fees with VAT included (renting) vs itemized (leasing)
+                example: true
+              mileage_limit_year:
+                type: integer
+                description: Annual mileage limit (vehicle renting)
+                example: 15000
+              early_termination:
+                type: object
+                description: Early termination conditions
+                properties:
+                  allowed:
+                    type: boolean
+                    example: true
+                  penalty_type:
+                    type: string
+                    enum:
+                    - percentage_of_remaining
+                    - fixed
+                    - formula
+                    - other
+                    example: percentage_of_remaining
+                  penalty_value:
+                    type: number
+                    description: Percentage or amount depending on penalty_type
+                    example: 40
+          totals:
+            type: object
+            description: Accumulated totals as of extraction date
+            properties:
+              paid_installments:
+                type: integer
+                example: 10
+              remaining_installments:
+                type: integer
+                example: 38
+              total_paid:
+                type: number
+                description: Total paid (fees + services + taxes)
+              total_pending:
+                type: number
+              principal_outstanding:
+                type: number
+                description: Outstanding principal (if applicable in leasing)
+              accrued_interest:
+                type: number
+                description: Accrued unpaid interest
+          installments:
+            type: object
+            description: Installment schedule
+            properties:
+              paid:
+                type: array
+                items:
+                  $ref: '#/components/schemas/lease_installment'
+              scheduled:
+                type: array
+                items:
+                  $ref: '#/components/schemas/lease_installment'
+    contracts:
+      type: array
+      items:
+        type: object
+        description: Contracts associated with the user, such as loans, cards, or insurance.
+        required:
+        - signing_date
+        - type
+        - subtype
+        - description
+        - pdf_file
+        properties:
+          signing_date:
+            type: string
+            format: date
+            description: Contract signing date.
+            example: '2003-09-26'
+          type:
+            type: string
+            enum:
+            - loan
+            - card
+            - insurance
+            description: Contract type
+            example: loan
+          subtype:
+            type: string
+            enum:
+            - personal
+            - mortgage
+            - card
+            - health
+            - life
+            - auto
+            description: Contract subtype
+            example: mortgage
+          description:
+            type: string
+            description: Description provided by the bank
+            example: Variable rate mortgage
+          pdf_file:
+            type: string
+            format: byte
+            description: Contract PDF file encoded in base64
+    entity-data:
+      type: object
+      required:
+      - success
+      - payload
+      - statistics
+      properties:
+        success:
+          type: boolean
+          example: true
+        payload:
+          type: object
+          properties:
+            user_information:
+              $ref: '#/components/schemas/user_information'
+            portfolios:
+              $ref: '#/components/schemas/portfolios'
+            accounts:
+              $ref: '#/components/schemas/accounts'
+            cards:
+              $ref: '#/components/schemas/cards'
+            receipts:
+              $ref: '#/components/schemas/receipts'
+            loans:
+              $ref: '#/components/schemas/loans'
+            deposits:
+              $ref: '#/components/schemas/deposits'
+            leases:
+              $ref: '#/components/schemas/leases'
+            insurances:
+              $ref: '#/components/schemas/insurances'
+            properties:
+              $ref: '#/components/schemas/properties'
+            files:
+              $ref: '#/components/schemas/files'
+            contracts:
+              $ref: '#/components/schemas/contracts'
+            factoring:
+              $ref: '#/components/schemas/factoring'
+            confirming:
+              $ref: '#/components/schemas/confirming'
+            employment:
+              $ref: '#/components/schemas/employment'
+            guarantees:
+              $ref: '#/components/schemas/guarantees'
+        statistics:
+          $ref: '#/components/schemas/statistics'
+    portfolio_composition_pension_plans:
+      type: array
+      description: Composition for subtype=pension-plans
+      items:
+        $ref: '#/components/schemas/portfolio_composition_pension_plans_item'
+    portfolio_transaction:
+      type: object
+      required:
+      - uuid
+      - value_date
+      - operation_type
+      - shares
+      - price
+      - total_amount
+      - currency
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier, in relation to the portfolio uuid, assigned by Wealth Reader
+          example: 05e4563f5bbf2d06efd0a29ebe7edbbb4e1bff63
+        operation_pending:
+          type: boolean
+          description: Indicates whether the operation is pending execution or not.
+          example: false
+        operation_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          example: '2020-01-30'
+        value_date:
+          type: string
+          format: date
+          example: '2020-01-30'
+        operation_type:
+          type: string
+          enum:
+          - purchase
+          - sale
+          - subscription by transfer
+          - redemption by transfer
+          - scrip dividend
+          - capital increase
+          - equity rights
+          - equity fee
+          - equity adjustment
+          example: purchase
+        shares:
+          type: number
+          example: 1076.8273
+        price:
+          type: number
+          example: 11.1438
+        total_amount:
+          type: number
+          example: 12000
+          minimum: 0
+          description: It is always an absolute value. The sign is defined by operation_type
+        currency:
+          type: string
+          description: Original currency of the transaction.
+          example: EUR
+        reference_currency:
+          type: string
+          description: Portfolio currency. This field is only included when it differs from currency.
+          example: USD
+        exchange_rate:
+          type: number
+          description: Exchange rate between currency and reference_currency. This field is only included when reference_currency differs from currency.
+          example: 1
+    user_information:
+      type: object
+      description: Information related to the person logging in
+      required:
+      - ID
+      - name
+      properties:
+        ID:
+          type: string
+          example: 12345678Z
+        name:
+          type: string
+          example: LUIS GARCIA BAQUERO
+        gender:
+          type: string
+          enum:
+          - male
+          - female
+          example: male
+        birth_date:
+          type: string
+          format: date
+          example: '1980-09-26'
+        birth_place:
+          type: string
+          example: Ibiza
+        email:
+          type: string
+          example: lgarcia@gmail.com
+        cell_phone:
+          type: string
+          description: Phone number with international prefix, without spaces
+          example: '+34666123456'
+        address:
+          type: string
+          example: CALLE BAILEN 41 1A
+        city:
+          type: string
+          example: MADRID
+        country:
+          type: string
+          example: SPAIN
+        postal_code:
+          type: string
+          example: '28005'
+        marital_status:
+          type: string
+          enum:
+          - single
+          - married
+          example: married
+        job:
+          type: string
+          description: 'The value here varies greatly from one entity to another: from indicating only if it is self-employment or employment to indicating the type of profession'
+          example: CUENTA PROPIA
+    portfolio_pension_plans:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - pension-plans
+            example: pension-plans
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_pension_plans'
+    portfolios:
+      type: array
+      description: Investment portfolios. Item schema depends on subtype.
+      items:
+        oneOf:
+        - $ref: '#/components/schemas/portfolio_funds'
+        - $ref: '#/components/schemas/portfolio_stocks'
+        - $ref: '#/components/schemas/portfolio_pension_plans'
+        - $ref: '#/components/schemas/portfolio_bonds'
+        - $ref: '#/components/schemas/portfolio_alternative_investments'
+        - $ref: '#/components/schemas/portfolio_crypto'
+        discriminator:
+          propertyName: subtype
+          mapping:
+            funds: '#/components/schemas/portfolio_funds'
+            stocks: '#/components/schemas/portfolio_stocks'
+            pension-plans: '#/components/schemas/portfolio_pension_plans'
+            bonds: '#/components/schemas/portfolio_bonds'
+            alternative-investments: '#/components/schemas/portfolio_alternative_investments'
+            crypto: '#/components/schemas/portfolio_crypto'
+    accounts:
+      type: array
+      items:
+        type: object
+        description: Bank accounts
+        required:
+        - uuid
+        - code
+        - name
+        - currency
+        - owners
+        - balances
+        - transactions
+        properties:
+          uuid:
+            type: string
+            example: 8076932f04f73e27fe608fee4d12fca8708dec8c
+          subtype:
+            type: string
+            enum:
+            - checking
+            - savings
+            - line-of-credit
+            example: checking
+          interest_rate:
+            type:
+            - number
+            - 'null'
+            example: 0.5
+            description: Account interest rate, if applicable.
+          line_of_credit_details:
+            type:
+            - object
+            - 'null'
+            description: Specific details for line of credit accounts. Only available when subtype is line-of-credit
+            properties:
+              credit_limit:
+                type:
+                - number
+                - 'null'
+                example: 50000
+                description: Credit limit
+              interest_rate:
+                type:
+                - number
+                - 'null'
+                example: 4.5
+                description: Interest rate for the credit line
+              credit_used:
+                type: number
+                example: 15000
+                description: Credit used
+              credit_available:
+                type:
+                - number
+                - 'null'
+                example: 35000
+                description: Available credit
+              constitution_date:
+                type:
+                - string
+                - 'null'
+                format: date
+                example: '2021-05-20'
+                description: Date when the credit line was constituted
+              expiration_date:
+                type:
+                - string
+                - 'null'
+                format: date
+                example: '2031-05-20'
+                description: Expiration date of the credit line
+          code:
+            type: string
+            description: IBAN code without spaces
+            example: ES4914651234561234567890
+          name:
+            type: string
+            example: Cuenta NÓMINA
+          currency:
+            type: string
+            example: EUR
+          owners:
+            $ref: '#/components/schemas/owners'
+          balances:
+            type: object
+            properties:
+              available:
+                type: number
+                example: 14302.07
+              current:
+                type: number
+                example: 14302.07
+          additional_info:
+            $ref: '#/components/schemas/additional_info'
+          transactions:
+            type: array
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier, in relation to the account uuid, assigned by Wealth Reader
+                  example: d0c2ea4c072cf4d7b0fd494d7728260d736e6b25
+                operation_date:
+                  type: string
+                  format: date
+                  example: '2022-12-30'
+                value_date:
+                  type: string
+                  format: date
+                  example: '2022-12-30'
+                amount:
+                  type: number
+                  example: -1.1
+                balance:
+                  type: number
+                  example: 14302.07
+                description:
+                  type: string
+                  example: Pago en TELPARK MADRID ES
+                pdf_file:
+                  type: string
+                  description: PDF file encoded in Base64 if requested via the add_pdf_from_uuids parameter
+                pdf_file_settled:
+                  type: boolean
+                  description: Indicates whether the file generated by the bank is final (true) or provisional (false)
+                categorization:
+                  type: object
+                  description: Optional categorization information
+                  x-nullable: true
+                  properties:
+                    type:
+                      type: integer
+                      example: 1
+                      description: The complete list of categories can be obtained from the /entities/category-types/ method
+                    portfolio-uuid:
+                      type: string
+                      x-nullable: true
+                      example: '1465010091400123456789'
+                    ISIN:
+                      type: string
+                      x-nullable: true
+                      example: US88160R1014
+                transfer_details:
+                  type: object
+                  x-nullable: true
+                  description: This data only appears when the transaction is a transfer. If it is a transfer and this information does not appear, but it does appear in online banking, you can open a ticket to have it added.
+                  properties:
+                    concept:
+                      type: string
+                      description: Concept written by the sender or issuer
+                      example: Pago de factura 12345
+                    sender_receiver:
+                      type: string
+                      description: Name of the sender or recipient
+                      example: Juan Pérez
+                    account_number:
+                      type: string
+                      description: Account number of the sender or recipient
+                      example: ESXX12341234121234567890
+                additional_info:
+                  $ref: '#/components/schemas/additional_info'
+    portfolio_composition_funds_item:
+      type: object
+      properties:
+        ISIN:
+          type:
+          - string
+          - 'null'
+          description: Instrument ISIN
+          example: LU1234567890
+        ISIN_description:
+          type:
+          - string
+          - 'null'
+          description: Instrument description
+          example: My Fund Class A
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency in ISO 4217 coding
+          example: EUR
+        weighting:
+          type:
+          - number
+          - 'null'
+          description: Weight with respect to the rest of the portfolio composition
+          example: 100
+        shares:
+          type:
+          - number
+          - 'null'
+          description: Shares
+          example: 225.0077
+        price:
+          type:
+          - number
+          - 'null'
+          description: Current price
+          example: 14.5577
+        total_amount:
+          type:
+          - number
+          - 'null'
+          description: Total amount
+          example: 3275.6
+        reference_currency:
+          type:
+          - string
+          - 'null'
+          description: When currency differs from reference_currency, indicates the reference currency used for conversion
+          example: EUR
+        exchange_rate:
+          type:
+          - number
+          - 'null'
+          description: Exchange rate applied from currency to reference_currency
+          example: 1
+    properties:
+      type: array
+      items:
+        type: object
+        description: Real estate assets
+        required:
+        - uuid
+        - code
+        - currency
+        - trading_price
+        - trading_year
+        - historic_prices
+        properties:
+          uuid:
+            type: string
+          code:
+            description: Cadastral reference
+            type: string
+          description:
+            type: string
+          purpose:
+            type: string
+          currency:
+            type: string
+          trading_price:
+            type: number
+            description: Trading price of the property
+          trading_year:
+            type: number
+            description: Year of the trade
+          historic_prices:
+            type: array
+            description: Historical prices of the property
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: Date of the price valuation
+                price:
+                  type: number
+                  description: Valuation price
+    warning-error-codes:
+      type: array
+      items:
+        type: object
+        required:
+        - code
+        - description
+        - possible_reasons
+        - how_to_proceed
+        properties:
+          code:
+            type: integer
+            description: Error code
+            example: 2
+          description:
+            type: string
+            description: Error description
+            example: Incorrect call
+          possible_reasons:
+            type: string
+            description: Possible causes of the error
+            example: Some of the required parameters have not been sent or have been sent in an incorrect format
+          how_to_proceed:
+            type: string
+            description: How to act when this error code is obtained
+            example: The text received in "message" will detail the reason for the error. For example, "The parameter "api_key" is mandatory".
+    portfolio_funds:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - funds
+            example: funds
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_funds'
+    portfolio_alternative_investments:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - alternative-investments
+            example: alternative-investments
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_funds'
+    deposits:
+      type: array
+      items:
+        type: object
+        description: Fixed-term deposits
+        required:
+        - uuid
+        - code
+        - name
+        - currency
+        - principal
+        - start_date
+        - maturity_date
+        - rate_type
+        - nominal_interest_rate
+        - owners
+        - status
+        - interest_movements
+        properties:
+          uuid:
+            type: string
+            description: Unique identifier, in relation to the user, assigned by Wealth Reader
+            example: 0ae4d722b1c82feeafb4b36b2893230444071335
+          code:
+            type: string
+            description: Bank's internal identifier (contract/deposit)
+            example: DPZ-1234567890
+          name:
+            type: string
+            example: 12-month deposit
+          currency:
+            type: string
+            example: EUR
+          principal:
+            type: number
+            description: Contracted nominal amount
+            example: 10000
+          pending_principal:
+            type: number
+            description: Remaining nominal amount to be repaid
+            example: 5000
+          start_date:
+            type: string
+            format: date
+            example: '2024-09-01'
+          maturity_date:
+            type: string
+            format: date
+            example: '2025-09-01'
+          payment_frequency:
+            type: string
+            enum:
+            - monthly
+            - quarterly
+            - semiannual
+            - annual
+            - at_maturity
+            description: Interest payment frequency, if provided by the entity
+            example: at_maturity
+          capitalization:
+            type: string
+            enum:
+            - none
+            - simple
+            - compound
+            description: 'Interest capitalization type:
+
+              * `none` - Interest is paid out to linked_account, principal stays constant
+
+              * `simple` - Interest calculated on original principal only, may accrue (accrued_interest) but does not generate further interest
+
+              * `compound` - Interest added to principal at each period, next period''s interest calculated on the new total
+
+              '
+            example: none
+          rate_type:
+            type: string
+            enum:
+            - fixed
+            - variable
+            example: fixed
+          nominal_interest_rate:
+            type: number
+            description: Nominal interest rate (NIR) for the entire period, if applicable
+            example: 3
+          apr_tae:
+            type: number
+            description: Annual Percentage Rate (APR/TAE); if the entity provides TAE, return it here
+            example: 3.04
+          day_count_convention:
+            type: string
+            enum:
+            - ACT/360
+            - ACT/365
+            - 30E/360
+            - ACT/ACT
+            description: Day count convention, if available
+            example: ACT/365
+          linked_account:
+            type: string
+            description: IBAN where interests or principal are credited at maturity
+            example: ES4021005321592566566159
+          accrued_interest:
+            type: number
+            description: Accrued unpaid interest as of the extraction date
+            example: 24.58
+          expected_interest_total:
+            type: number
+            description: Expected gross interest at maturity (if the entity calculates it)
+            example: 300
+          withholding_tax_rate:
+            type: number
+            description: Withholding tax rate applied to interest, if reported by the entity
+            example: 19
+          status:
+            type: string
+            enum:
+            - active
+            - matured
+            - cancelled
+            - early_redeemed
+            example: active
+          auto_renewal:
+            type: object
+            description: Auto-renewal information
+            properties:
+              enabled:
+                type: boolean
+                example: false
+              renewed_times:
+                type: integer
+                example: 0
+              next_renewal_date:
+                type:
+                - string
+                - 'null'
+                format: date
+              renewal_term_months:
+                type:
+                - integer
+                - 'null'
+          early_withdrawal:
+            type: object
+            description: Early withdrawal clauses (if reported by the entity)
+            properties:
+              allowed:
+                type: boolean
+                example: true
+              penalty_type:
+                type: string
+                enum:
+                - percentage
+                - fixed
+                - interest_loss
+                - other
+                example: interest_loss
+              penalty_value:
+                type: number
+                example: 100
+              notes:
+                type: string
+                example: Loss of accrued interest for the current period
+          owners:
+            $ref: '#/components/schemas/owners'
+          interest_movements:
+            type: array
+            description: Interest payments made and/or scheduled
+            items:
+              type: object
+              required:
+              - date
+              - currency
+              - gross_interest
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier, in relation to the deposit
+                  example: 90763109952d4f2ebece8dceca8254078c5384a0
+                scheduled:
+                  type: boolean
+                  description: true if scheduled (future), false if already paid
+                  example: false
+                date:
+                  type: string
+                  format: date
+                  example: '2025-09-01'
+                period_start:
+                  type: string
+                  format: date
+                  description: Start of the period to which the coupon/interest corresponds
+                  example: '2024-09-01'
+                period_end:
+                  type: string
+                  format: date
+                  example: '2025-09-01'
+                currency:
+                  type: string
+                  example: EUR
+                gross_interest:
+                  type: number
+                  example: 300
+                withholding_tax:
+                  type: number
+                  example: 57
+                net_interest:
+                  type: number
+                  example: 243
+                payment_type:
+                  type: string
+                  enum:
+                  - coupon
+                  - maturity
+                  example: maturity
+          principal_movements:
+            type: array
+            description: Principal movements - opening, renewal, cancellation, reimbursement
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier, in relation to the deposit
+                  example: 90763109952d4f2ebece8dceca8254078c5384a0
+                date:
+                  type: string
+                  format: date
+                type:
+                  type: string
+                  enum:
+                  - opening
+                  - renewal
+                  - maturity_payout
+                  - early_redemption
+                amount:
+                  type: number
+                  example: 12000
+                  minimum: 0
+                  description: It is always an absolute value. The sign is defined by type
+                currency:
+                  type: string
+                target_account:
+                  type: string
+                  description: Destination account when principal is reimbursed
+    portfolio_crypto:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - crypto
+            example: crypto
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_crypto'
+    error-detail:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: unsigned
+          example: 1000
+          description: The code indicates the error family. For example, from 2000 to 2999 indicate login problems. Each error code should be treated differently. For example, if the code indicates 'Incorrect login', the call should not be retried; if the code indicates 'entity under maintenance' it can be retried later. You can get the complete list in the error-codes method.
+        message:
+          type: string
+          example: Incorrect login
+          description: Text in the entity's language. It is safe to show to the user and in many cases will help them correct the error
+    loans:
+      type: array
+      items:
+        type: object
+        description: Loans
+        required:
+        - uuid
+        - contract_number
+        - loan_type
+        - constitution_date
+        - currency
+        - granted_capital
+        - pending_amount
+        - linked_account
+        - holders
+        - interest_rate
+        - expiration_date
+        - pending_receipts
+        - amortization_made
+        - amortization_pending
+        properties:
+          uuid:
+            type: string
+            description: Unique identifier, in relation to the user, assigned by Wealth Reader
+            example: 0ae4d722b1c82feeafb4b36b2893230444071335
+          contract_number:
+            type: string
+            example: 9620.321-205439-70
+          loan_type:
+            type: string
+            example: Variable rate mortgage
+          constitution_date:
+            type: string
+            format: date
+            example: '2022-02-23'
+          currency:
+            type: string
+            example: EUR
+          granted_capital:
+            type: number
+            example: 207000
+          pending_amount:
+            type: number
+            example: 166639.77
+          next_installment:
+            type: number
+            description: Amount of the next installment
+            example: 1040.3
+          linked_account:
+            type: string
+            description: IBAN code without spaces
+            example: ES0123456789012345678901
+          holders:
+            type: array
+            description: Loan holders
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 32945945D
+                name:
+                  type: string
+                  example: Diego Serrano
+          interest_rate:
+            type: number
+            example: 3.768
+          expiration_date:
+            type: string
+            format: date
+            example: '2042-03-01'
+          pending_receipts:
+            type: number
+            example: 223
+          amortization_made:
+            type: array
+            description: Record of amortizations made
+            items:
+              type: object
+              required:
+              - uuid
+              - date
+              - amortized
+              - interest
+              - total
+              - pending_capital
+              - operation_type
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier, in relation to the loan, assigned by Wealth Reader
+                  example: 8772d6c978d37d7af83094abf380b8b703e94105
+                date:
+                  type: string
+                  format: date
+                  example: '2022-12-01'
+                amortized:
+                  type: number
+                  description: Amortized capital
+                  example: 515.43
+                interest:
+                  type: number
+                  description: Interest paid
+                  example: 524.87
+                total:
+                  type: number
+                  description: Total payment
+                  example: 1040.3
+                pending_capital:
+                  type: number
+                  description: Pending capital after this payment
+                  example: 166639.77
+                operation_type:
+                  type: string
+                  description: Type of amortization operation
+                  enum:
+                  - receipt_paid
+                  - partial_amortization
+                  - total_amortization
+                  - receipt_partially_paid
+                  - receipt_pending
+                  example: receipt_paid
+          amortization_pending:
+            type: array
+            description: Scheduled future amortizations
+            items:
+              type: object
+              required:
+              - uuid
+              - date
+              - amortized
+              - interest
+              - total
+              - pending_capital
+              - operation_type
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier, in relation to the loan, assigned by Wealth Reader
+                  example: e59296b79e7f80cec26679d2c65883025fd59295
+                date:
+                  type: string
+                  format: date
+                  example: '2030-12-01'
+                amortized:
+                  type: number
+                  description: Amortized capital
+                  example: 515.43
+                interest:
+                  type: number
+                  description: Interest to be paid
+                  example: 524.87
+                total:
+                  type: number
+                  description: Total payment
+                  example: 1040.3
+                pending_capital:
+                  type: number
+                  description: Pending capital after this payment
+                  example: 66639.77
+                operation_type:
+                  type: string
+                  description: Type of scheduled operation
+                  enum:
+                  - receipt_scheduled
+                  example: receipt_scheduled
+    error:
+      type: object
+      required:
+      - success
+      - error
+      - statistics
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          $ref: '#/components/schemas/error-detail'
+        statistics:
+          $ref: '#/components/schemas/statistics'
+    owner:
+      type: object
+      required:
+      - ID
+      - name
+      - role
+      properties:
+        ID:
+          type:
+          - string
+          - 'null'
+          example: 12345678Z
+          description: It may be null if the bank does not specify it
+        name:
+          type: string
+          example: LUIS GARCIA BAQUERO
+        role:
+          type: string
+          enum:
+          - owner
+          - legal representative
+          - administrator
+          - attorney-in-fact
+          - authorised
+          example: owner
+    portfolio_composition_pension_plans_item:
+      type: object
+      properties:
+        DGS:
+          type:
+          - string
+          - 'null'
+          description: Pension plan identifier (entity-specific)
+          example: 123456
+        DGS_description:
+          type:
+          - string
+          - 'null'
+          description: Pension plan description
+          example: Pension Plan Balanced
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency in ISO 4217 coding
+          example: EUR
+        weighting:
+          type:
+          - number
+          - 'null'
+          description: Weight with respect to the rest of the portfolio composition
+          example: 100
+        shares:
+          type:
+          - number
+          - 'null'
+          description: Shares
+          example: 225.0077
+        price:
+          type:
+          - number
+          - 'null'
+          description: Current price
+          example: 14.5577
+        total_amount:
+          type:
+          - number
+          - 'null'
+          description: Total amount
+          example: 3275.6
+        reference_currency:
+          type:
+          - string
+          - 'null'
+          description: When currency differs from reference_currency, indicates the reference currency used for conversion
+          example: EUR
+        exchange_rate:
+          type:
+          - number
+          - 'null'
+          description: Exchange rate applied from currency to reference_currency
+          example: 1
+    portfolio_common:
+      type: object
+      description: Portfolio container. The fields available in composition depend on the subtype.
+      required:
+      - subtype
+      - uuid
+      - code
+      - name
+      - currency
+      - total_value
+      - weighted_return
+      - annualized_volatility
+      - yield
+      - contributions
+      - withholdings
+      - owners
+      - composition
+      - transactions
+      properties:
+        subtype:
+          type: string
+          description: Portfolio subtype. Determines which keys may appear in composition items.
+          enum:
+          - funds
+          - stocks
+          - pension-plans
+          - bonds
+          - alternative-investments
+          - crypto
+          example: funds
+        uuid:
+          type: string
+          description: Unique identifier, in relation to the user, assigned by Wealth Reader
+          example: 05e4563f5bbf2d06efd0a29ebe7edbbb4e1bff63
+        code:
+          type: string
+          example: '1465010091400123456789'
+        name:
+          type: string
+          example: Fondo Dinámico
+        currency:
+          type: string
+          example: EUR
+        total_value:
+          type: number
+          example: 3275.6
+        weighted_return:
+          type:
+          - number
+          - 'null'
+          example: 8.49
+        annualized_volatility:
+          type:
+          - number
+          - 'null'
+          description: The value will be 0 when the entity does not provide it
+          example: 0
+        yield:
+          type:
+          - number
+          - 'null'
+          example: 256.27
+        contributions:
+          type:
+          - number
+          - 'null'
+          example: 3019.33
+        withholdings:
+          type:
+          - number
+          - 'null'
+          example: 0
+        contracting_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          example: '2016-04-27'
+        linked_account:
+          type:
+          - string
+          - 'null'
+          description: IBAN code without spaces. The value will be null when the entity does not provide it
+          example: ES4021005321592566566159
+        portfolio_statement:
+          type:
+          - string
+          - 'null'
+          format: byte
+          description: Base64-encoded PDF statement for the portfolio (when provided by the entity)
+          example: JVBERi0xLjQKJ...
+        owners:
+          $ref: '#/components/schemas/owners'
+        composition:
+          type: array
+          description: Positions that make up the portfolio. The item schema depends on subtype.
+        transactions:
+          $ref: '#/components/schemas/portfolio_transactions'
+    portfolio_stocks:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - stocks
+            example: stocks
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_stocks'
+    portfolio_composition_stocks_item:
+      type: object
+      properties:
+        ISIN:
+          type:
+          - string
+          - 'null'
+          description: Instrument ISIN
+          example: US0378331005
+        ISIN_description:
+          type:
+          - string
+          - 'null'
+          description: Instrument description
+          example: Apple Inc.
+        MIC:
+          type:
+          - string
+          - 'null'
+          description: Market Identifier Code (ISO 10383)
+          example: XNAS
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency in ISO 4217 coding
+          example: USD
+        weighting:
+          type:
+          - number
+          - 'null'
+          description: Weight with respect to the rest of the portfolio composition
+          example: 60
+        shares:
+          type:
+          - number
+          - 'null'
+          description: Shares
+          example: 10
+        price:
+          type:
+          - number
+          - 'null'
+          description: Current price
+          example: 180.25
+        total_amount:
+          type:
+          - number
+          - 'null'
+          description: Total amount
+          example: 1802.5
+        reference_currency:
+          type:
+          - string
+          - 'null'
+          description: When currency differs from reference_currency, indicates the reference currency used for conversion
+          example: EUR
+        exchange_rate:
+          type:
+          - number
+          - 'null'
+          description: Exchange rate applied from currency to reference_currency
+          example: 0.92
+    category-types:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: integer
+            description: Numeric transaction type
+            example: 100
+          literal:
+            type: string
+            description: Literal transaction type
+            example: Dividend collection
+    portfolio_transactions:
+      type: array
+      items:
+        $ref: '#/components/schemas/portfolio_transaction'
+    owners:
+      type: array
+      description: Array of owners
+      items:
+        $ref: '#/components/schemas/owner'
+    confirming:
+      type: array
+      items:
+        type: object
+        description: Confirming contracts
+        properties:
+          uuid:
+            type: string
+            example: a62ae601a424403d0fbe968d335378421006c277
+          contract_number:
+            type: string
+            example: '000117001234567'
+          name:
+            type: string
+            example: CONFIRMING PPAL SIN RECURSO
+          currency:
+            type: string
+            example: EUR
+          balances:
+            type: object
+            properties:
+              available:
+                type: number
+                example: 11360.26
+              disposed:
+                type: number
+                example: 0
+              limit:
+                type: number
+                example: 11360.26
+          interest_rate:
+            type: number
+            example: 5.25
+          linked_account:
+            type: string
+            example: ES0700812345678987654321
+          next_payment_date:
+            type: string
+            example: ''
+          number_invoices:
+            type: integer
+            example: 8
+          total_value:
+            type: number
+            description: Total value of invoices
+            example: 14495.28
+          total_advanced_value:
+            type: number
+            description: Total advanced value
+            example: 6919.29
+          deferrals:
+            type: array
+            description: Validated confirming deferral rows. May be present when one status result failed; totals are then omitted.
+            items:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - paid
+                  - unpaid
+                overdue:
+                  type: boolean
+                  description: Present as true for Impagado deferrals
+                start_date:
+                  type: string
+                  format: date
+                due_date:
+                  type: string
+                  format: date
+                total_value:
+                  type: number
+                deferred_value:
+                  type: number
+                interest_value:
+                  type: number
+                interest_rate:
+                  type: number
+                late_fees:
+                  type: number
+          deferrals_summary:
+            type: object
+            description: Present only when all requested deferral statuses completed successfully.
+            properties:
+              count:
+                type: integer
+              total_value:
+                type: number
+              deferred_value:
+                type: number
+              interest_value:
+                type: number
+              late_fees:
+                type: number
+          providers:
+            type: array
+            description: List of providers associated with the confirming contract
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier for the provider
+                  example: 2ea19f8f8bcda4fa5e54e139852e0a7459d16b49
+                company_id:
+                  type: string
+                  description: Company tax identification number
+                  example: A12345678
+                company_name:
+                  type: string
+                  description: Company name
+                  example: EMPRESA 1 SA
+          invoices:
+            type: array
+            description: List of invoices associated with the confirming contract
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier for the invoice
+                  example: 6b556584df0721e5f0b27448247c9682a6470d11
+                invoice_id:
+                  type: string
+                  description: Invoice number or reference
+                  example: 2023-53
+                provider_id:
+                  type: string
+                  description: Provider tax identification number
+                  example: A12345678
+                operation_date:
+                  type: string
+                  format: date
+                  description: Date when the invoice was processed
+                  example: '2023-10-25'
+                due_date:
+                  type: string
+                  format: date
+                  description: Invoice due date
+                  example: '2024-01-24'
+                amount:
+                  type: number
+                  description: Invoice amount
+                  example: 918.45
+                status:
+                  type: string
+                  description: Invoice status (e.g., pending, advanced, paid)
+                  example: advanced
+                additional_info:
+                  $ref: '#/components/schemas/additional_info'
+          additional_info:
+            $ref: '#/components/schemas/additional_info'
+    portfolio_composition_stocks:
+      type: array
+      description: Composition for subtype=stocks
+      items:
+        $ref: '#/components/schemas/portfolio_composition_stocks_item'
+    portfolio_composition_crypto:
+      type: array
+      description: Composition for subtype=crypto
+      items:
+        $ref: '#/components/schemas/portfolio_composition_crypto_item'
+    receipts:
+      type: array
+      items:
+        type: object
+        description: Direct debit receipts
+        required:
+        - last_receipt_date
+        - issuer
+        - description
+        - account
+        - status
+        - amount
+        - pdf_file
+        properties:
+          last_receipt_date:
+            type: string
+            format: date
+            example: '2023-07-23'
+          issuer:
+            type: string
+            example: Canal de Isabel II
+          description:
+            type: string
+            example: RECIBO CONTRATO 328774628 FACTURA DEL 18 07 23
+          account:
+            type: string
+            example: ES0123456789012345678901
+          status:
+            type: string
+            enum:
+            - paid
+            - pending
+            - overdue
+            example: paid
+          amount:
+            type: number
+            example: 50.75
+          pdf_file:
+            type: string
+            description: PDF file encoded in Base64
+          pdf_file_settled:
+            type: boolean
+            description: Indicates whether the PDF file generated by the bank is final (true) or provisional (false). Some banks generate a PDF with less information on the transaction day and later provide the final version.
+    portfolio_composition_bonds:
+      type: array
+      description: Composition for subtype=bonds
+      items:
+        $ref: '#/components/schemas/portfolio_composition_bonds_item'
+    portfolio_composition_crypto_item:
+      type: object
+      properties:
+        ticker:
+          type:
+          - string
+          - 'null'
+          description: Crypto asset ticker/symbol
+          example: BTC
+        value_time:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Valuation timestamp (when provided by the entity)
+          example: '2026-02-18T12:34:56Z'
+        description:
+          type:
+          - string
+          - 'null'
+          description: Asset description
+          example: Bitcoin
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency in ISO 4217 coding
+          example: EUR
+        weighting:
+          type:
+          - number
+          - 'null'
+          description: Weight with respect to the rest of the portfolio composition
+          example: 100
+        shares:
+          type:
+          - number
+          - 'null'
+          description: Quantity held
+          example: 0.25
+        price:
+          type:
+          - number
+          - 'null'
+          description: Current price
+          example: 42000
+        total_amount:
+          type:
+          - number
+          - 'null'
+          description: Total amount
+          example: 10500
+        reference_currency:
+          type:
+          - string
+          - 'null'
+          description: When currency differs from reference_currency, indicates the reference currency used for conversion
+          example: EUR
+        exchange_rate:
+          type:
+          - number
+          - 'null'
+          description: Exchange rate applied from currency to reference_currency
+          example: 1
+    files:
+      type: array
+      items:
+        type: object
+        description: Files
+        required:
+        - file_date
+        - retrieval_type
+        - file_type
+        - description
+        - content
+        properties:
+          file_date:
+            type: string
+            format: date
+            description: File date
+            example: '2023-07-21'
+          retrieval_type:
+            type: string
+            description: Whether the file was downloaded from a repository (already generated) or generated on-the-fly
+            enum:
+            - repository
+            - on-the-fly
+            example: repository
+          file_type:
+            type: string
+            description: File type
+            enum:
+            - Norma 43
+            - Norma 19
+            - Norma 57
+            - Norma 34
+            - MT940
+            - MT103
+            - SEPA XML
+            - BAI2
+            - CAMT
+            - AFB120
+            - ACH
+            example: Norma 43
+          description:
+            type: string
+            description: File description
+            example: Monthly account statement
+          content:
+            type: string
+            format: byte
+            description: File content encoded in Base64
+    lease_installment:
+      type: object
+      required:
+      - date
+      - currency
+      - total
+      properties:
+        uuid:
+          type: string
+          description: Unique identifier of the installment
+          example: b07a1a0d3e6f4c2a9e1d0f8b7c6a5e4d3c2b1a0f
+        date:
+          type: string
+          format: date
+          example: '2025-01-01'
+        status:
+          type: string
+          enum:
+          - paid
+          - pending
+          - overdue
+          example: pending
+        currency:
+          type: string
+          example: EUR
+        total:
+          type: number
+          example: 625.5
+        breakdown:
+          type: object
+          description: Installment breakdown
+          properties:
+            principal:
+              type: number
+              example: 450
+            interest:
+              type: number
+              example: 80
+            services:
+              type: number
+              description: Maintenance/insurance/tires (renting)
+              example: 70
+            taxes:
+              type: number
+              description: VAT/IGIC, etc.
+              example: 25.5
+            fees:
+              type: number
+              description: Management fees/other
+              example: 0
+        value_date:
+          type: string
+          format: date
+          description: Value date if provided by the bank
+        receipt_uuid:
+          type: string
+          description: Link to receipt in receipts if exists
+        additional_info:
+          $ref: '#/components/schemas/additional_info'
+    portfolio_composition_funds:
+      type: array
+      description: Composition for subtype=funds (and alternative-investments)
+      items:
+        $ref: '#/components/schemas/portfolio_composition_funds_item'
+    additional_info:
+      type: array
+      items:
+        type: object
+        description: Contains bank-specific fields with the name assigned by the bank
+        properties:
+          key:
+            type: string
+            description: Key of the additional information
+          value:
+            type: string
+            description: Value of the additional information
+    guarantees:
+      type: array
+      items:
+        type: object
+        description: Bank guarantees and sureties (technical and financial)
+        required:
+        - uuid
+        - code
+        - name
+        - subtype
+        - currency
+        - balances
+        properties:
+          uuid:
+            type: string
+            description: Unique identifier, in relation to the user, assigned by Wealth Reader
+            example: 90763109952d4f2ebece8dceca8254078c5384a0
+          code:
+            type: string
+            description: Bank's internal identifier for the guarantee
+            example: f2eb8HsfBDSDseBw8HeSccOwJweJ2OfxH2xDw8Ss
+          name:
+            type: string
+            description: Commercial name of the guarantee according to the entity
+            example: Aval Financiero
+          nickname:
+            type: string
+            description: Alias if the entity provides it
+            example: Aval Técnico
+          subtype:
+            type: string
+            description: Type of guarantee/surety
+            enum:
+            - financial
+            - technical
+            - other
+            example: financial
+          currency:
+            type: string
+            example: EUR
+          linked_account:
+            type: string
+            description: IBAN of the linked account (if the entity provides it)
+            example: ES1001289462580857003432
+          issuer:
+            type: string
+            description: Issuing entity if applicable (when not the main bank itself)
+            example: Bankinter, S.A.
+          beneficiary:
+            type: string
+            description: Beneficiary of the guarantee if available
+            example: AYUNTAMIENTO DE MADRID
+          purpose:
+            type: string
+            description: Purpose/object of the guarantee if the entity indicates it
+            example: Licitación obra pública expediente 2025/00123
+          issue_date:
+            type: string
+            format: date
+            description: Issue date
+            example: '2024-06-12'
+          expiration_date:
+            type: string
+            format: date
+            description: Expiration date if exists
+            example: '2026-06-11'
+          status:
+            type: string
+            description: Operational status of the guarantee
+            enum:
+            - active
+            - cancelled
+            - expired
+            - pending_activation
+            example: active
+          balances:
+            type: object
+            description: Key amounts of the guarantee
+            properties:
+              guaranteed_amount:
+                type: number
+                description: Guaranteed nominal amount
+                example: 50000
+              exposure:
+                type: number
+                description: Outstanding risk/amount used under the guarantee (if applicable)
+                example: 0
+              available:
+                type: number
+                description: Remaining available amount (if applicable to guarantee lines)
+                example: 50000
+              euro_equivalent:
+                type: number
+                description: Euro equivalent if the guarantee currency is different
+                example: 50000
+          fees_commissions:
+            type: object
+            description: Information about associated fees, if the entity provides it
+            properties:
+              periodicity:
+                type: string
+                enum:
+                - monthly
+                - quarterly
+                - semiannual
+                - annual
+                - at_issuance
+                - other
+                example: quarterly
+              last_charge_date:
+                type: string
+                format: date
+                example: '2025-03-31'
+              last_charge_amount:
+                type: number
+                example: 125
+          additional_info:
+            type: array
+            description: Non-standardized bank-specific fields
+            items:
+              type: object
+              properties:
+                key:
+                  type: string
+                  example: euroEquivalent
+                value:
+                  type: string
+                  example: '0.00'
+    portfolio_bonds:
+      allOf:
+      - $ref: '#/components/schemas/portfolio_common'
+      - type: object
+        properties:
+          subtype:
+            type: string
+            enum:
+            - bonds
+            example: bonds
+          composition:
+            $ref: '#/components/schemas/portfolio_composition_bonds'
+    portfolio_composition_bonds_item:
+      type: object
+      properties:
+        ISIN:
+          type:
+          - string
+          - 'null'
+          description: Instrument ISIN
+          example: DE000BU0E139
+        ISIN_description:
+          type:
+          - string
+          - 'null'
+          description: Instrument description
+          example: Federal Republic of Germany 02024-15.01.2025 Certificate of Deposit
+        currency:
+          type:
+          - string
+          - 'null'
+          description: Currency in ISO 4217 coding
+          example: EUR
+        price:
+          type:
+          - number
+          - 'null'
+          description: Market price
+          example: 0.988945
+        shares:
+          type:
+          - number
+          - 'null'
+          description: Quantity / nominal
+          example: 247000
+        total_amount:
+          type:
+          - number
+          - 'null'
+          description: Total nominal value / total amount
+          example: 244269.42
+        interest_rate:
+          type:
+          - number
+          - 'null'
+          description: Coupon rate
+          example: 0.5
+        issue_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Issue date
+          example: '2024-01-15'
+        due_date:
+          type:
+          - string
+          - 'null'
+          format: date
+          description: Maturity date
+          example: '2025-01-15'
+        risk_rating:
+          type:
+          - string
+          - 'null'
+          description: Credit rating
+          example: AAA
+        effective_yield:
+          type:
+          - number
+          - 'null'
+          description: Effective yield
+          example: 3.12
+        immediate_yield:
+          type:
+          - number
+          - 'null'
+          description: Immediate yield
+          example: 3.05
+        reference_currency:
+          type:
+          - string
+          - 'null'
+          description: When currency differs from reference_currency, indicates the reference currency used for conversion
+          example: EUR
+        exchange_rate:
+          type:
+          - number
+          - 'null'
+          description: Exchange rate applied from currency to reference_currency
+          example: 1
+    statistics:
+      type: object
+      required:
+      - SESSION
+      - execution_time
+      properties:
+        SESSION:
+          type: string
+          example: 3463754e3540884
+          description: Always save this value, whether the connection is correct or not. It is necessary to obtain support
+        execution_time:
+          type: number
+          example: 0.958119869232178
+          description: Duration of execution
+        warnings:
+          type: array
+          description: Indicates warnings, not problems, found during information extraction. It is relevant to store them to improve support
+          items:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: unsigned
+                example: 1000
+                description: You can get the complete list in the error-codes method.
+              message:
+                type: string
+                example: No contracted funds
+                description: Text describing the warning
+              product_type:
+                type: string
+                example: portfolios
+                enum:
+                - user_information
+                - accounts
+                - portfolios
+                - cards
+                - receipts
+                - loans
+                - deposits
+                - leases
+                - insurances
+                - factoring
+                - confirming
+                - properties
+                - invoices
+                - files
+                - contracts
+                - unknown
+                description: When retrieving what type of product the warning has been generated for
+        operation_id:
+          type: string
+          example: 1827C79229
+          description: 'The value will be indicated when the API has been invoked through the Widget provided by Wealth Reader. To learn more about this type of integration, visit: https://docs-en.wealthreader.com/'
+        token:
+          type: string
+          example: FRJ0mHlaqZwLzu
+          description: The value is indicated when credentials are tokenized for the first time
+    factoring:
+      type: array
+      items:
+        type: object
+        description: Factoring contracts
+        properties:
+          uuid:
+            type: string
+            example: a62ae601a424403d0fbe968d335378421006c277
+          contract_number:
+            type: string
+            example: '000117001234567'
+          name:
+            type: string
+            example: FACTORING PPAL SIN RECURSO
+          assignor_id:
+            type: string
+            description: Assignor tax identification number (NIF)
+            example: B12345678
+          assignor:
+            type: string
+            description: Assignor name. The user or company that sells invoices to obtain liquidity.
+            example: QUICKSILVER DISTRIBUCION Y LOGISTICA SL
+          assignor_type:
+            type: string
+            description: Type of factoring agreement
+            enum:
+            - non-recourse-factor
+            - recourse-factor
+            example: non-recourse-factor
+          assignee:
+            type: string
+            description: Assignee name. The banking or financial institution that acquires the collection rights.
+            example: Banco Sabadell
+          currency:
+            type: string
+            example: EUR
+          balances:
+            type: object
+            properties:
+              available:
+                type: number
+                example: 11360.26
+              disposed:
+                type: number
+                example: 0
+              limit:
+                type: number
+                example: 11360.26
+          interest_rate:
+            type: number
+            example: 5.25
+          linked_account:
+            type: string
+            description: IBAN code without spaces. The value will be null when the entity does not provide it.
+            example: ES0700812345678987654321
+          next_payment_date:
+            type: string
+            example: ''
+          number_invoices:
+            type: integer
+            example: 8
+          total_value:
+            type: number
+            description: Total value of invoices
+            example: 14495.28
+          total_advanced_value:
+            type: number
+            description: Total advanced value
+            example: 6919.29
+          clients:
+            type: array
+            description: List of clients associated with the factoring contract
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier for the client
+                  example: 2ea19f8f8bcda4fa5e54e139852e0a7459d16b49
+                client_id:
+                  type: string
+                  description: Client tax identification number
+                  example: A12345678
+                client_name:
+                  type: string
+                  description: Client name
+                  example: EMPRESA 1 SA
+                limit:
+                  type: number
+                  description: Credit limit for the client
+                  example: 50000
+                disposed:
+                  type: number
+                  description: Amount disposed/used by the client
+                  example: 15000
+                available:
+                  type: number
+                  description: Available credit for the client
+                  example: 35000
+                payment_method:
+                  type: string
+                  description: Payment method for the client
+                  enum:
+                  - bank-check
+                  - check
+                  - domiciled_bill
+                  - accepted_domiciled_bill
+                  - non_domiciled_bill
+                  - accepted_non_domiciled_bill
+                  - non_order_promissory_note
+                  - order_promissory_note
+                  - accepted_receipt
+                  - domiciled_receipt
+                  - non_domiciled_receipt
+                  - transfer_payment
+                  example: transfer_payment
+                payment_deadline:
+                  type: integer
+                  description: Payment deadline in days
+                  example: 30
+          invoices:
+            type: array
+            description: List of invoices associated with the factoring contract
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier for the invoice
+                  example: 6b556584df0721e5f0b27448247c9682a6470d11
+                invoice_id:
+                  type: string
+                  description: Invoice number or reference
+                  example: 2023-53
+                client_id:
+                  type: string
+                  description: Client tax identification number
+                  example: A12345678
+                operation_date:
+                  type: string
+                  format: date
+                  description: Date when the invoice was factored
+                  example: '2023-10-25'
+                due_date:
+                  type: string
+                  format: date
+                  description: Invoice due date
+                  example: '2024-01-24'
+                payment_date:
+                  type: string
+                  format: date
+                  description: Date when the invoice was paid
+                  example: '2024-01-20'
+                invoice_amount:
+                  type: number
+                  description: Invoice amount
+                  example: 918.45
+                received_amount:
+                  type: number
+                  description: Amount received/advanced
+                  example: 873.53
+                status:
+                  type: string
+                  description: Invoice status
+                  enum:
+                  - cancelled
+                  - disputed
+                  - funded
+                  - pending_collection
+                  - prefinancing
+                  - overdue
+                  example: funded
+                additional_info:
+                  $ref: '#/components/schemas/additional_info'
+          transactions:
+            type: array
+            description: List of transactions associated with the factoring contract
+            items:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Unique identifier for the transaction
+                  example: 8a3b5c7d9e1f2a4b6c8d0e2f4a6b8c0d2e4f6a8b
+                operation_date:
+                  type: string
+                  format: date
+                  description: Date when the transaction was executed
+                  example: '2023-10-25'
+                value_date:
+                  type: string
+                  format: date
+                  description: Value date of the transaction
+                  example: '2023-10-26'
+                amount:
+                  type: number
+                  description: Transaction amount
+                  example: 1500
+                currency:
+                  type: string
+                  description: Transaction currency
+                  example: EUR
+                description:
+                  type: string
+                  description: Transaction description
+                  example: ANTICIPO FACTURA 2023-53

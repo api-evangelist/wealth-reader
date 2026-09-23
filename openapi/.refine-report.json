@@ -1,0 +1,26 @@
+{
+  "provider": "wealth-reader",
+  "sources": [
+    "_original/wealth-reader-api-for-ai.yaml"
+  ],
+  "outputs": [
+    "wealth-reader-advanced-api-openapi.yml",
+    "wealth-reader-cards-real-time-api-openapi.yml",
+    "wealth-reader-core-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "wealth-reader-api-for-ai.yaml: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/wealth-reader-api.yaml: archived document superseded by a larger archived document",
+    "wealth-reader-advanced-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "wealth-reader-cards-real-time-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "wealth-reader-core-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}
