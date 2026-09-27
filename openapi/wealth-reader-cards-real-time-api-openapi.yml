@@ -529,6 +529,13 @@ components:
             lat: 39.4661559
             lon: -0.3679207
           received_at: '2026-07-11T14:02:11+02:00'
+    cards-enrollment-response:
+      type: object
+      properties:
+        success:
+          type: boolean
+        payload:
+          $ref: '#/components/schemas/cards-enrollment'
     cards-enrollment:
       type: object
       description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
@@ -563,10 +570,3 @@ components:
           - string
           - 'null'
           description: Card user uuid once confirmed; null while it is pending.
-    cards-enrollment-response:
-      type: object
-      properties:
-        success:
-          type: boolean
-        payload:
-          $ref: '#/components/schemas/cards-enrollment'

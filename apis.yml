@@ -3,6 +3,22 @@ description: 'Read-only bank aggregation API: accounts, transactions, cards, loa
   portfolios from banks, brokers and asset managers in 61 countries, over both the PSD2 regulatory channel
   and a non-PSD2 channel that returns wealth data the regulatory APIs do not expose.'
 url: https://raw.githubusercontent.com/api-evangelist/wealth-reader/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  license_evidence:
+    not_product:
+    - wealth-reader/wealthreader-api-docs
+  open_source: unknown
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-not-product
+  generated: '2026-09-25'
+  method: derived
 created: '2026-08-24'
 modified: '2026-09-16'
 specificationVersion: '0.23'
