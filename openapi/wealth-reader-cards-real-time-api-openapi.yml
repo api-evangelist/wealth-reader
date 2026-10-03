@@ -420,6 +420,40 @@ paths:
                     type: string
 components:
   schemas:
+    cards-enrollment:
+      type: object
+      description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
+      properties:
+        enrollment_id:
+          type:
+          - string
+          - 'null'
+          description: 32 hex characters. Identifier returned by POST /cards/enrollments/.
+        status:
+          type: string
+          enum:
+          - pending
+          - active
+          - expired
+          - error
+        email:
+          type: string
+          format: email
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        confirmed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        user_id:
+          type:
+          - string
+          - 'null'
+          description: Card user uuid once confirmed; null while it is pending.
     cards-transaction:
       type: object
       description: Real-time card transaction object. Same format returned by GET /cards/transactions/ and sent in the card_transaction.created webhook.
@@ -536,37 +570,3 @@ components:
           type: boolean
         payload:
           $ref: '#/components/schemas/cards-enrollment'
-    cards-enrollment:
-      type: object
-      description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
-      properties:
-        enrollment_id:
-          type:
-          - string
-          - 'null'
-          description: 32 hex characters. Identifier returned by POST /cards/enrollments/.
-        status:
-          type: string
-          enum:
-          - pending
-          - active
-          - expired
-          - error
-        email:
-          type: string
-          format: email
-        expires_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        confirmed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        user_id:
-          type:
-          - string
-          - 'null'
-          description: Card user uuid once confirmed; null while it is pending.
