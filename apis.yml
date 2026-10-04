@@ -32,6 +32,7 @@ tags:
 - Wealth Management
 - Banking
 - Fintech
+- Data Aggregation
 apis:
 - aid: wealth-reader:wealth-reader-advanced-api
   name: Wealth Reader Advanced API
