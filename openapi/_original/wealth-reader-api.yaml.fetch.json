@@ -1,0 +1,12 @@
+{
+ "url": "https://www.wealthreader.com/api-reference/api-for-ai.yaml",
+ "requested_url": "https://www.wealthreader.com/api-reference/api-for-ai.yaml",
+ "status": 200,
+ "content_type": "",
+ "bytes": 181374,
+ "sha256": "e5b461babe9567e86d28958ed57e391884c444b41e3f75a0f972daa542aaa23f",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
