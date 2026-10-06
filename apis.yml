@@ -20,7 +20,7 @@ deliveryModel:
   generated: '2026-09-25'
   method: derived
 created: '2026-08-24'
-modified: '2026-09-16'
+modified: '2026-10-06'
 specificationVersion: '0.23'
 tags:
 - Bank Aggregation
@@ -134,6 +134,8 @@ maintainers:
   X-linkedin: https://www.linkedin.com/company/wealthreader/
 image: https://www.wealthreader.com/i/wealthreader.svg
 common:
+- url: https://blog.wealthreader.com/feed/
+  type: BlogRSS
 - type: Website
   url: https://www.wealthreader.com/
 - type: DomainSecurity
