@@ -1,0 +1,3158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-entity-data-schema.json",
+  "title": "entity-data",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/entity-data",
+  "type": "object",
+  "required": [
+    "success",
+    "payload",
+    "statistics"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "user_information": {
+          "$ref": "#/$defs/user_information"
+        },
+        "portfolios": {
+          "$ref": "#/$defs/portfolios"
+        },
+        "accounts": {
+          "$ref": "#/$defs/accounts"
+        },
+        "cards": {
+          "$ref": "#/$defs/cards"
+        },
+        "receipts": {
+          "$ref": "#/$defs/receipts"
+        },
+        "loans": {
+          "$ref": "#/$defs/loans"
+        },
+        "deposits": {
+          "$ref": "#/$defs/deposits"
+        },
+        "leases": {
+          "$ref": "#/$defs/leases"
+        },
+        "insurances": {
+          "$ref": "#/$defs/insurances"
+        },
+        "properties": {
+          "$ref": "#/$defs/properties"
+        },
+        "files": {
+          "$ref": "#/$defs/files"
+        },
+        "contracts": {
+          "$ref": "#/$defs/contracts"
+        },
+        "factoring": {
+          "$ref": "#/$defs/factoring"
+        },
+        "confirming": {
+          "$ref": "#/$defs/confirming"
+        },
+        "employment": {
+          "$ref": "#/$defs/employment"
+        },
+        "guarantees": {
+          "$ref": "#/$defs/guarantees"
+        }
+      }
+    },
+    "statistics": {
+      "$ref": "#/$defs/statistics"
+    }
+  },
+  "$defs": {
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Bank accounts",
+        "required": [
+          "uuid",
+          "code",
+          "name",
+          "currency",
+          "owners",
+          "balances",
+          "transactions"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "subtype": {
+            "type": "string",
+            "enum": [
+              "checking",
+              "savings",
+              "line-of-credit"
+            ]
+          },
+          "interest_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Account interest rate, if applicable."
+          },
+          "line_of_credit_details": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Specific details for line of credit accounts. Only available when subtype is line-of-credit",
+            "properties": {
+              "credit_limit": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Credit limit"
+              },
+              "interest_rate": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Interest rate for the credit line"
+              },
+              "credit_used": {
+                "type": "number",
+                "description": "Credit used"
+              },
+              "credit_available": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "Available credit"
+              },
+              "constitution_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "Date when the credit line was constituted"
+              },
+              "expiration_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date",
+                "description": "Expiration date of the credit line"
+              }
+            }
+          },
+          "code": {
+            "type": "string",
+            "description": "IBAN code without spaces"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "owners": {
+            "$ref": "#/$defs/owners"
+          },
+          "balances": {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "number"
+              },
+              "current": {
+                "type": "number"
+              }
+            }
+          },
+          "additional_info": {
+            "$ref": "#/$defs/additional_info"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier, in relation to the account uuid, assigned by Wealth Reader"
+                },
+                "operation_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "value_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "balance": {
+                  "type": "number"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "pdf_file": {
+                  "type": "string",
+                  "description": "PDF file encoded in Base64 if requested via the add_pdf_from_uuids parameter"
+                },
+                "pdf_file_settled": {
+                  "type": "boolean",
+                  "description": "Indicates whether the file generated by the bank is final (true) or provisional (false)"
+                },
+                "categorization": {
+                  "type": "object",
+                  "description": "Optional categorization information",
+                  "x-nullable": true,
+                  "properties": {
+                    "type": {
+                      "type": "integer",
+                      "description": "The complete list of categories can be obtained from the /entities/category-types/ method"
+                    },
+                    "portfolio-uuid": {
+                      "type": "string",
+                      "x-nullable": true
+                    },
+                    "ISIN": {
+                      "type": "string",
+                      "x-nullable": true
+                    }
+                  }
+                },
+                "transfer_details": {
+                  "type": "object",
+                  "x-nullable": true,
+                  "description": "This data only appears when the transaction is a transfer. If it is a transfer and this information does not appear, but it does appear in online banking, you can open a ticket to have it added.",
+                  "properties": {
+                    "concept": {
+                      "type": "string",
+                      "description": "Concept written by the sender or issuer"
+                    },
+                    "sender_receiver": {
+                      "type": "string",
+                      "description": "Name of the sender or recipient"
+                    },
+                    "account_number": {
+                      "type": "string",
+                      "description": "Account number of the sender or recipient"
+                    }
+                  }
+                },
+                "additional_info": {
+                  "$ref": "#/$defs/additional_info"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "additional_info": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Contains bank-specific fields with the name assigned by the bank",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Key of the additional information"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value of the additional information"
+          }
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Credit, debit, and prepaid cards",
+        "required": [
+          "subtype",
+          "uuid",
+          "code",
+          "name",
+          "currency",
+          "balances"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "cancelled",
+              "locked"
+            ]
+          },
+          "subtype": {
+            "type": "string",
+            "enum": [
+              "credit",
+              "debit",
+              "prepaid"
+            ]
+          },
+          "uuid": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Numbering with PCI compliance obfuscation"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "next_payment_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Next payment date for credit cards"
+          },
+          "anual_interest": {
+            "type": "number",
+            "description": "Annual interest rate"
+          },
+          "tae": {
+            "type": "number",
+            "description": "Annual Equivalent Rate (APR)"
+          },
+          "balances": {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              },
+              "disposed": {
+                "type": "number"
+              }
+            }
+          },
+          "linked_account": {
+            "type": "string"
+          },
+          "owner": {
+            "$ref": "#/$defs/owners"
+          },
+          "additional_info": {
+            "$ref": "#/$defs/additional_info"
+          },
+          "transactions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "uuid",
+                "value_date",
+                "amount",
+                "description"
+              ],
+              "properties": {
+                "uuid": {
+                  "type": "string"
+                },
+                "settled": {
+                  "type": "boolean",
+                  "description": "Indicates whether it is a transaction settled by the bank, which means it will not change in subsequent readings."
+                },
+                "operation_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Transaction operation date"
+                },
+                "value_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "amount": {
+                  "type": "number"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Transaction currency"
+                },
+                "exchange_rate": {
+                  "type": "number",
+                  "description": "Exchange rate applied to the transaction"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "categorization": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "description": "Categorization information if available",
+                  "properties": {
+                    "type": {
+                      "type": "integer",
+                      "description": "Category type according to the /entities/category-types/ method"
+                    }
+                  }
+                },
+                "additional_info": {
+                  "$ref": "#/$defs/additional_info"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "confirming": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Confirming contracts",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "contract_number": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "balances": {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "number"
+              },
+              "disposed": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              }
+            }
+          },
+          "interest_rate": {
+            "type": "number"
+          },
+          "linked_account": {
+            "type": "string"
+          },
+          "next_payment_date": {
+            "type": "string"
+          },
+          "number_invoices": {
+            "type": "integer"
+          },
+          "total_value": {
+            "type": "number",
+            "description": "Total value of invoices"
+          },
+          "total_advanced_value": {
+            "type": "number",
+            "description": "Total advanced value"
+          },
+          "deferrals": {
+            "type": "array",
+            "description": "Validated confirming deferral rows. May be present when one status result failed; totals are then omitted.",
+            "items": {
+              "type": "object",
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "unpaid"
+                  ]
+                },
+                "overdue": {
+                  "type": "boolean",
+                  "description": "Present as true for Impagado deferrals"
+                },
+                "start_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "due_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "total_value": {
+                  "type": "number"
+                },
+                "deferred_value": {
+                  "type": "number"
+                },
+                "interest_value": {
+                  "type": "number"
+                },
+                "interest_rate": {
+                  "type": "number"
+                },
+                "late_fees": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "deferrals_summary": {
+            "type": "object",
+            "description": "Present only when all requested deferral statuses completed successfully.",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "total_value": {
+                "type": "number"
+              },
+              "deferred_value": {
+                "type": "number"
+              },
+              "interest_value": {
+                "type": "number"
+              },
+              "late_fees": {
+                "type": "number"
+              }
+            }
+          },
+          "providers": {
+            "type": "array",
+            "description": "List of providers associated with the confirming contract",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier for the provider"
+                },
+                "company_id": {
+                  "type": "string",
+                  "description": "Company tax identification number"
+                },
+                "company_name": {
+                  "type": "string",
+                  "description": "Company name"
+                }
+              }
+            }
+          },
+          "invoices": {
+            "type": "array",
+            "description": "List of invoices associated with the confirming contract",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier for the invoice"
+                },
+                "invoice_id": {
+                  "type": "string",
+                  "description": "Invoice number or reference"
+                },
+                "provider_id": {
+                  "type": "string",
+                  "description": "Provider tax identification number"
+                },
+                "operation_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date when the invoice was processed"
+                },
+                "due_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Invoice due date"
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Invoice amount"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Invoice status (e.g., pending, advanced, paid)"
+                },
+                "additional_info": {
+                  "$ref": "#/$defs/additional_info"
+                }
+              }
+            }
+          },
+          "additional_info": {
+            "$ref": "#/$defs/additional_info"
+          }
+        }
+      }
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Contracts associated with the user, such as loans, cards, or insurance.",
+        "required": [
+          "signing_date",
+          "type",
+          "subtype",
+          "description",
+          "pdf_file"
+        ],
+        "properties": {
+          "signing_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Contract signing date."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "loan",
+              "card",
+              "insurance"
+            ],
+            "description": "Contract type"
+          },
+          "subtype": {
+            "type": "string",
+            "enum": [
+              "personal",
+              "mortgage",
+              "card",
+              "health",
+              "life",
+              "auto"
+            ],
+            "description": "Contract subtype"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description provided by the bank"
+          },
+          "pdf_file": {
+            "type": "string",
+            "format": "byte",
+            "description": "Contract PDF file encoded in base64"
+          }
+        }
+      }
+    },
+    "deposits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Fixed-term deposits",
+        "required": [
+          "uuid",
+          "code",
+          "name",
+          "currency",
+          "principal",
+          "start_date",
+          "maturity_date",
+          "rate_type",
+          "nominal_interest_rate",
+          "owners",
+          "status",
+          "interest_movements"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier, in relation to the user, assigned by Wealth Reader"
+          },
+          "code": {
+            "type": "string",
+            "description": "Bank's internal identifier (contract/deposit)"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "principal": {
+            "type": "number",
+            "description": "Contracted nominal amount"
+          },
+          "pending_principal": {
+            "type": "number",
+            "description": "Remaining nominal amount to be repaid"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "maturity_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "payment_frequency": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "quarterly",
+              "semiannual",
+              "annual",
+              "at_maturity"
+            ],
+            "description": "Interest payment frequency, if provided by the entity"
+          },
+          "capitalization": {
+            "type": "string",
+            "enum": [
+              "none",
+              "simple",
+              "compound"
+            ],
+            "description": "Interest capitalization type:\n* `none` - Interest is paid out to linked_account, principal stays constant\n* `simple` - Interest calculated on original principal only, may accrue (accrued_interest) but does not generate further interest\n* `compound` - Interest added to principal at each period, next period's interest calculated on the new total\n"
+          },
+          "rate_type": {
+            "type": "string",
+            "enum": [
+              "fixed",
+              "variable"
+            ]
+          },
+          "nominal_interest_rate": {
+            "type": "number",
+            "description": "Nominal interest rate (NIR) for the entire period, if applicable"
+          },
+          "apr_tae": {
+            "type": "number",
+            "description": "Annual Percentage Rate (APR/TAE); if the entity provides TAE, return it here"
+          },
+          "day_count_convention": {
+            "type": "string",
+            "enum": [
+              "ACT/360",
+              "ACT/365",
+              "30E/360",
+              "ACT/ACT"
+            ],
+            "description": "Day count convention, if available"
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN where interests or principal are credited at maturity"
+          },
+          "accrued_interest": {
+            "type": "number",
+            "description": "Accrued unpaid interest as of the extraction date"
+          },
+          "expected_interest_total": {
+            "type": "number",
+            "description": "Expected gross interest at maturity (if the entity calculates it)"
+          },
+          "withholding_tax_rate": {
+            "type": "number",
+            "description": "Withholding tax rate applied to interest, if reported by the entity"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "matured",
+              "cancelled",
+              "early_redeemed"
+            ]
+          },
+          "auto_renewal": {
+            "type": "object",
+            "description": "Auto-renewal information",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "renewed_times": {
+                "type": "integer"
+              },
+              "next_renewal_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date"
+              },
+              "renewal_term_months": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          },
+          "early_withdrawal": {
+            "type": "object",
+            "description": "Early withdrawal clauses (if reported by the entity)",
+            "properties": {
+              "allowed": {
+                "type": "boolean"
+              },
+              "penalty_type": {
+                "type": "string",
+                "enum": [
+                  "percentage",
+                  "fixed",
+                  "interest_loss",
+                  "other"
+                ]
+              },
+              "penalty_value": {
+                "type": "number"
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          },
+          "owners": {
+            "$ref": "#/$defs/owners"
+          },
+          "interest_movements": {
+            "type": "array",
+            "description": "Interest payments made and/or scheduled",
+            "items": {
+              "type": "object",
+              "required": [
+                "date",
+                "currency",
+                "gross_interest"
+              ],
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier, in relation to the deposit"
+                },
+                "scheduled": {
+                  "type": "boolean",
+                  "description": "true if scheduled (future), false if already paid"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "period_start": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Start of the period to which the coupon/interest corresponds"
+                },
+                "period_end": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "gross_interest": {
+                  "type": "number"
+                },
+                "withholding_tax": {
+                  "type": "number"
+                },
+                "net_interest": {
+                  "type": "number"
+                },
+                "payment_type": {
+                  "type": "string",
+                  "enum": [
+                    "coupon",
+                    "maturity"
+                  ]
+                }
+              }
+            }
+          },
+          "principal_movements": {
+            "type": "array",
+            "description": "Principal movements - opening, renewal, cancellation, reimbursement",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier, in relation to the deposit"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "opening",
+                    "renewal",
+                    "maturity_payout",
+                    "early_redemption"
+                  ]
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "It is always an absolute value. The sign is defined by type"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "target_account": {
+                  "type": "string",
+                  "description": "Destination account when principal is reimbursed"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "employment": {
+      "type": "object",
+      "description": "Employment history / work life and contributions",
+      "properties": {
+        "summary": {
+          "type": "object",
+          "description": "Aggregated summary of employment history",
+          "properties": {
+            "totalDaysRegistered": {
+              "type": "integer",
+              "description": "Total days registered"
+            },
+            "daysInMultipleActivity": {
+              "type": "integer",
+              "description": "Days in multiple activity"
+            },
+            "daysContributedForBenefits": {
+              "type": "integer",
+              "description": "Days contributed for benefits"
+            },
+            "totalTimeEquivalence": {
+              "type": "string",
+              "description": "Total time equivalence"
+            }
+          }
+        },
+        "periods": {
+          "type": "array",
+          "description": "List of employment and similar periods (employment, unemployment, self-employment, etc.)",
+          "items": {
+            "type": "object",
+            "required": [
+              "employer",
+              "regime",
+              "contract",
+              "category",
+              "actualStartDate",
+              "startDate",
+              "endDate",
+              "contributedDays"
+            ],
+            "properties": {
+              "employer": {
+                "type": "string"
+              },
+              "regime": {
+                "type": "string"
+              },
+              "contract": {
+                "type": "string"
+              },
+              "category": {
+                "type": "string"
+              },
+              "actualStartDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "endDate": {
+                "type": "string",
+                "description": "End date or 'Actual' if the period is ongoing"
+              },
+              "contributedDays": {
+                "type": "integer",
+                "description": "Days contributed within the period"
+              }
+            }
+          }
+        }
+      }
+    },
+    "factoring": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Factoring contracts",
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "contract_number": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "assignor_id": {
+            "type": "string",
+            "description": "Assignor tax identification number (NIF)"
+          },
+          "assignor": {
+            "type": "string",
+            "description": "Assignor name. The user or company that sells invoices to obtain liquidity."
+          },
+          "assignor_type": {
+            "type": "string",
+            "description": "Type of factoring agreement",
+            "enum": [
+              "non-recourse-factor",
+              "recourse-factor"
+            ]
+          },
+          "assignee": {
+            "type": "string",
+            "description": "Assignee name. The banking or financial institution that acquires the collection rights."
+          },
+          "currency": {
+            "type": "string"
+          },
+          "balances": {
+            "type": "object",
+            "properties": {
+              "available": {
+                "type": "number"
+              },
+              "disposed": {
+                "type": "number"
+              },
+              "limit": {
+                "type": "number"
+              }
+            }
+          },
+          "interest_rate": {
+            "type": "number"
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN code without spaces. The value will be null when the entity does not provide it."
+          },
+          "next_payment_date": {
+            "type": "string"
+          },
+          "number_invoices": {
+            "type": "integer"
+          },
+          "total_value": {
+            "type": "number",
+            "description": "Total value of invoices"
+          },
+          "total_advanced_value": {
+            "type": "number",
+            "description": "Total advanced value"
+          },
+          "clients": {
+            "type": "array",
+            "description": "List of clients associated with the factoring contract",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier for the client"
+                },
+                "client_id": {
+                  "type": "string",
+                  "description": "Client tax identification number"
+                },
+                "client_name": {
+                  "type": "string",
+                  "description": "Client name"
+                },
+                "limit": {
+                  "type": "number",
+                  "description": "Credit limit for the client"
+                },
+                "disposed": {
+                  "type": "number",
+                  "description": "Amount disposed/used by the client"
+                },
+                "available": {
+                  "type": "number",
+                  "description": "Available credit for the client"
+                },
+                "payment_method": {
+                  "type": "string",
+                  "description": "Payment method for the client",
+                  "enum": [
+                    "bank-check",
+                    "check",
+                    "domiciled_bill",
+                    "accepted_domiciled_bill",
+                    "non_domiciled_bill",
+                    "accepted_non_domiciled_bill",
+                    "non_order_promissory_note",
+                    "order_promissory_note",
+                    "accepted_receipt",
+                    "domiciled_receipt",
+                    "non_domiciled_receipt",
+                    "transfer_payment"
+                  ]
+                },
+                "payment_deadline": {
+                  "type": "integer",
+                  "description": "Payment deadline in days"
+                }
+              }
+            }
+          },
+          "invoices": {
+            "type": "array",
+            "description": "List of invoices associated with the factoring contract",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier for the invoice"
+                },
+                "invoice_id": {
+                  "type": "string",
+                  "description": "Invoice number or reference"
+                },
+                "client_id": {
+                  "type": "string",
+                  "description": "Client tax identification number"
+                },
+                "operation_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date when the invoice was factored"
+                },
+                "due_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Invoice due date"
+                },
+                "payment_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date when the invoice was paid"
+                },
+                "invoice_amount": {
+                  "type": "number",
+                  "description": "Invoice amount"
+                },
+                "received_amount": {
+                  "type": "number",
+                  "description": "Amount received/advanced"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Invoice status",
+                  "enum": [
+                    "cancelled",
+                    "disputed",
+                    "funded",
+                    "pending_collection",
+                    "prefinancing",
+                    "overdue"
+                  ]
+                },
+                "additional_info": {
+                  "$ref": "#/$defs/additional_info"
+                }
+              }
+            }
+          },
+          "transactions": {
+            "type": "array",
+            "description": "List of transactions associated with the factoring contract",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier for the transaction"
+                },
+                "operation_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date when the transaction was executed"
+                },
+                "value_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Value date of the transaction"
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Transaction amount"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Transaction currency"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Transaction description"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Files",
+        "required": [
+          "file_date",
+          "retrieval_type",
+          "file_type",
+          "description",
+          "content"
+        ],
+        "properties": {
+          "file_date": {
+            "type": "string",
+            "format": "date",
+            "description": "File date"
+          },
+          "retrieval_type": {
+            "type": "string",
+            "description": "Whether the file was downloaded from a repository (already generated) or generated on-the-fly",
+            "enum": [
+              "repository",
+              "on-the-fly"
+            ]
+          },
+          "file_type": {
+            "type": "string",
+            "description": "File type",
+            "enum": [
+              "Norma 43",
+              "Norma 19",
+              "Norma 57",
+              "Norma 34",
+              "MT940",
+              "MT103",
+              "SEPA XML",
+              "BAI2",
+              "CAMT",
+              "AFB120",
+              "ACH"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "File description"
+          },
+          "content": {
+            "type": "string",
+            "format": "byte",
+            "description": "File content encoded in Base64"
+          }
+        }
+      }
+    },
+    "guarantees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Bank guarantees and sureties (technical and financial)",
+        "required": [
+          "uuid",
+          "code",
+          "name",
+          "subtype",
+          "currency",
+          "balances"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier, in relation to the user, assigned by Wealth Reader"
+          },
+          "code": {
+            "type": "string",
+            "description": "Bank's internal identifier for the guarantee"
+          },
+          "name": {
+            "type": "string",
+            "description": "Commercial name of the guarantee according to the entity"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "Alias if the entity provides it"
+          },
+          "subtype": {
+            "type": "string",
+            "description": "Type of guarantee/surety",
+            "enum": [
+              "financial",
+              "technical",
+              "other"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN of the linked account (if the entity provides it)"
+          },
+          "issuer": {
+            "type": "string",
+            "description": "Issuing entity if applicable (when not the main bank itself)"
+          },
+          "beneficiary": {
+            "type": "string",
+            "description": "Beneficiary of the guarantee if available"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Purpose/object of the guarantee if the entity indicates it"
+          },
+          "issue_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Issue date"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Expiration date if exists"
+          },
+          "status": {
+            "type": "string",
+            "description": "Operational status of the guarantee",
+            "enum": [
+              "active",
+              "cancelled",
+              "expired",
+              "pending_activation"
+            ]
+          },
+          "balances": {
+            "type": "object",
+            "description": "Key amounts of the guarantee",
+            "properties": {
+              "guaranteed_amount": {
+                "type": "number",
+                "description": "Guaranteed nominal amount"
+              },
+              "exposure": {
+                "type": "number",
+                "description": "Outstanding risk/amount used under the guarantee (if applicable)"
+              },
+              "available": {
+                "type": "number",
+                "description": "Remaining available amount (if applicable to guarantee lines)"
+              },
+              "euro_equivalent": {
+                "type": "number",
+                "description": "Euro equivalent if the guarantee currency is different"
+              }
+            }
+          },
+          "fees_commissions": {
+            "type": "object",
+            "description": "Information about associated fees, if the entity provides it",
+            "properties": {
+              "periodicity": {
+                "type": "string",
+                "enum": [
+                  "monthly",
+                  "quarterly",
+                  "semiannual",
+                  "annual",
+                  "at_issuance",
+                  "other"
+                ]
+              },
+              "last_charge_date": {
+                "type": "string",
+                "format": "date"
+              },
+              "last_charge_amount": {
+                "type": "number"
+              }
+            }
+          },
+          "additional_info": {
+            "type": "array",
+            "description": "Non-standardized bank-specific fields",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "insurances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Insurance policies",
+        "required": [
+          "uuid",
+          "name",
+          "currency",
+          "coverage_category",
+          "status"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier, in relation to the user, assigned by Wealth Reader"
+          },
+          "code": {
+            "type": "string",
+            "description": "Bank's internal identifier of the policy"
+          },
+          "coverage_category": {
+            "type": "string",
+            "enum": [
+              "property",
+              "personal",
+              "services"
+            ],
+            "description": "Insurance coverage category"
+          },
+          "name": {
+            "type": "string",
+            "description": "Commercial name of the policy"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency in ISO 4217 format"
+          },
+          "insured_value": {
+            "type": "object",
+            "description": "Insured item and its insured amount",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Description of the insured item"
+              },
+              "value": {
+                "type": "number",
+                "description": "Insured amount"
+              }
+            }
+          },
+          "insured_concepts": {
+            "type": "array",
+            "description": "List of insured concepts (coverages) and their insured amounts",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "Insured concept / coverage"
+                },
+                "value": {
+                  "type": "number",
+                  "description": "Insured amount for this concept"
+                }
+              }
+            }
+          },
+          "constitution_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Policy start date"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Policy expiration date"
+          },
+          "next_payment_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of the next premium payment"
+          },
+          "next_installment": {
+            "type": "number",
+            "description": "Amount of the next premium payment"
+          },
+          "frequency": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "annual"
+            ],
+            "description": "Premium payment frequency"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "description": "Policy status"
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN of the account linked to the premium payment"
+          },
+          "owner": {
+            "type": "object",
+            "description": "Policyholder",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "description": "Policyholder identification document"
+              },
+              "name": {
+                "type": "string",
+                "description": "Policyholder name"
+              }
+            }
+          },
+          "claims": {
+            "type": "array",
+            "description": "Claims filed on the policy",
+            "items": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier of the claim assigned by Wealth Reader"
+                },
+                "claim_code": {
+                  "type": "string",
+                  "description": "Claim identifier assigned by the entity"
+                },
+                "incident_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date on which the incident occurred"
+                },
+                "claimed_date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date on which the claim was filed"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the claim"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "in_process",
+                    "accepted",
+                    "rejected"
+                  ],
+                  "description": "Claim status"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "lease_installment": {
+      "type": "object",
+      "required": [
+        "date",
+        "currency",
+        "total"
+      ],
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "Unique identifier of the installment"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "paid",
+            "pending",
+            "overdue"
+          ]
+        },
+        "currency": {
+          "type": "string"
+        },
+        "total": {
+          "type": "number"
+        },
+        "breakdown": {
+          "type": "object",
+          "description": "Installment breakdown",
+          "properties": {
+            "principal": {
+              "type": "number"
+            },
+            "interest": {
+              "type": "number"
+            },
+            "services": {
+              "type": "number",
+              "description": "Maintenance/insurance/tires (renting)"
+            },
+            "taxes": {
+              "type": "number",
+              "description": "VAT/IGIC, etc."
+            },
+            "fees": {
+              "type": "number",
+              "description": "Management fees/other"
+            }
+          }
+        },
+        "value_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Value date if provided by the bank"
+        },
+        "receipt_uuid": {
+          "type": "string",
+          "description": "Link to receipt in receipts if exists"
+        },
+        "additional_info": {
+          "$ref": "#/$defs/additional_info"
+        }
+      }
+    },
+    "leases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Leasing and renting contracts",
+        "required": [
+          "subtype",
+          "uuid",
+          "contract_number",
+          "provider",
+          "currency",
+          "start_date",
+          "end_date",
+          "payment_frequency",
+          "status",
+          "holders",
+          "asset",
+          "financials",
+          "installments"
+        ],
+        "properties": {
+          "subtype": {
+            "type": "string",
+            "enum": [
+              "leasing",
+              "renting"
+            ]
+          },
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier assigned by Wealth Reader"
+          },
+          "contract_number": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "Commercial name of the contract if provided by the entity"
+          },
+          "provider": {
+            "type": "object",
+            "description": "Lessor/financier",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "tax_id": {
+                "type": "string"
+              }
+            }
+          },
+          "currency": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "term_months": {
+            "type": "integer",
+            "description": "Total duration in months"
+          },
+          "payment_frequency": {
+            "type": "string",
+            "enum": [
+              "monthly",
+              "quarterly",
+              "semiannual",
+              "annual"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "finished",
+              "cancelled",
+              "in_arrears"
+            ]
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN for charges if provided by the bank"
+          },
+          "holders": {
+            "$ref": "#/$defs/owners"
+          },
+          "asset": {
+            "type": "object",
+            "description": "Leased asset",
+            "required": [
+              "category"
+            ],
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "vehicle",
+                  "industrial_equipment",
+                  "it_equipment",
+                  "real_estate",
+                  "other"
+                ]
+              },
+              "description": {
+                "type": "string"
+              },
+              "vin": {
+                "type": "string",
+                "description": "For vehicles, if available"
+              },
+              "license_plate": {
+                "type": "string"
+              },
+              "brand": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "year": {
+                "type": "integer"
+              },
+              "serial_number": {
+                "type": "string",
+                "description": "For machinery/equipment"
+              },
+              "address": {
+                "type": "string",
+                "description": "For real estate"
+              }
+            }
+          },
+          "financials": {
+            "type": "object",
+            "description": "Financial terms",
+            "properties": {
+              "capital_financed": {
+                "type": "number",
+                "description": "Financed base (only leasing; optional in renting)"
+              },
+              "nominal_interest_rate": {
+                "type": "number",
+                "description": "Nominal interest rate if applicable (more common in leasing)"
+              },
+              "apr_tae": {
+                "type": "number",
+                "description": "APR/TAE if the entity publishes it"
+              },
+              "discount_rate": {
+                "type": "number",
+                "description": "Discount rate (IFRS 16), if available"
+              },
+              "initial_fee": {
+                "type": "number",
+                "description": "Down payment/initial fee"
+              },
+              "security_deposit": {
+                "type": "number",
+                "description": "Security deposit if exists"
+              },
+              "residual_value": {
+                "type": "number",
+                "description": "Residual value/purchase option (typical in leasing)"
+              },
+              "purchase_option": {
+                "type": "boolean",
+                "description": "Purchase option exists at the end"
+              },
+              "services_included": {
+                "type": "object",
+                "description": "More common in renting",
+                "properties": {
+                  "maintenance": {
+                    "type": "boolean"
+                  },
+                  "insurance": {
+                    "type": "boolean"
+                  },
+                  "roadside_assistance": {
+                    "type": "boolean"
+                  },
+                  "tires": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "vat_included": {
+                "type": "boolean",
+                "description": "Fees with VAT included (renting) vs itemized (leasing)"
+              },
+              "mileage_limit_year": {
+                "type": "integer",
+                "description": "Annual mileage limit (vehicle renting)"
+              },
+              "early_termination": {
+                "type": "object",
+                "description": "Early termination conditions",
+                "properties": {
+                  "allowed": {
+                    "type": "boolean"
+                  },
+                  "penalty_type": {
+                    "type": "string",
+                    "enum": [
+                      "percentage_of_remaining",
+                      "fixed",
+                      "formula",
+                      "other"
+                    ]
+                  },
+                  "penalty_value": {
+                    "type": "number",
+                    "description": "Percentage or amount depending on penalty_type"
+                  }
+                }
+              }
+            }
+          },
+          "totals": {
+            "type": "object",
+            "description": "Accumulated totals as of extraction date",
+            "properties": {
+              "paid_installments": {
+                "type": "integer"
+              },
+              "remaining_installments": {
+                "type": "integer"
+              },
+              "total_paid": {
+                "type": "number",
+                "description": "Total paid (fees + services + taxes)"
+              },
+              "total_pending": {
+                "type": "number"
+              },
+              "principal_outstanding": {
+                "type": "number",
+                "description": "Outstanding principal (if applicable in leasing)"
+              },
+              "accrued_interest": {
+                "type": "number",
+                "description": "Accrued unpaid interest"
+              }
+            }
+          },
+          "installments": {
+            "type": "object",
+            "description": "Installment schedule",
+            "properties": {
+              "paid": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/lease_installment"
+                }
+              },
+              "scheduled": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/lease_installment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "loans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Loans",
+        "required": [
+          "uuid",
+          "contract_number",
+          "loan_type",
+          "constitution_date",
+          "currency",
+          "granted_capital",
+          "pending_amount",
+          "linked_account",
+          "holders",
+          "interest_rate",
+          "expiration_date",
+          "pending_receipts",
+          "amortization_made",
+          "amortization_pending"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Unique identifier, in relation to the user, assigned by Wealth Reader"
+          },
+          "contract_number": {
+            "type": "string"
+          },
+          "loan_type": {
+            "type": "string"
+          },
+          "constitution_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "granted_capital": {
+            "type": "number"
+          },
+          "pending_amount": {
+            "type": "number"
+          },
+          "next_installment": {
+            "type": "number",
+            "description": "Amount of the next installment"
+          },
+          "linked_account": {
+            "type": "string",
+            "description": "IBAN code without spaces"
+          },
+          "holders": {
+            "type": "array",
+            "description": "Loan holders",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "interest_rate": {
+            "type": "number"
+          },
+          "expiration_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "pending_receipts": {
+            "type": "number"
+          },
+          "amortization_made": {
+            "type": "array",
+            "description": "Record of amortizations made",
+            "items": {
+              "type": "object",
+              "required": [
+                "uuid",
+                "date",
+                "amortized",
+                "interest",
+                "total",
+                "pending_capital",
+                "operation_type"
+              ],
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier, in relation to the loan, assigned by Wealth Reader"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "amortized": {
+                  "type": "number",
+                  "description": "Amortized capital"
+                },
+                "interest": {
+                  "type": "number",
+                  "description": "Interest paid"
+                },
+                "total": {
+                  "type": "number",
+                  "description": "Total payment"
+                },
+                "pending_capital": {
+                  "type": "number",
+                  "description": "Pending capital after this payment"
+                },
+                "operation_type": {
+                  "type": "string",
+                  "description": "Type of amortization operation",
+                  "enum": [
+                    "receipt_paid",
+                    "partial_amortization",
+                    "total_amortization",
+                    "receipt_partially_paid",
+                    "receipt_pending"
+                  ]
+                }
+              }
+            }
+          },
+          "amortization_pending": {
+            "type": "array",
+            "description": "Scheduled future amortizations",
+            "items": {
+              "type": "object",
+              "required": [
+                "uuid",
+                "date",
+                "amortized",
+                "interest",
+                "total",
+                "pending_capital",
+                "operation_type"
+              ],
+              "properties": {
+                "uuid": {
+                  "type": "string",
+                  "description": "Unique identifier, in relation to the loan, assigned by Wealth Reader"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "amortized": {
+                  "type": "number",
+                  "description": "Amortized capital"
+                },
+                "interest": {
+                  "type": "number",
+                  "description": "Interest to be paid"
+                },
+                "total": {
+                  "type": "number",
+                  "description": "Total payment"
+                },
+                "pending_capital": {
+                  "type": "number",
+                  "description": "Pending capital after this payment"
+                },
+                "operation_type": {
+                  "type": "string",
+                  "description": "Type of scheduled operation",
+                  "enum": [
+                    "receipt_scheduled"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "owner": {
+      "type": "object",
+      "required": [
+        "ID",
+        "name",
+        "role"
+      ],
+      "properties": {
+        "ID": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "It may be null if the bank does not specify it"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "owner",
+            "legal representative",
+            "administrator",
+            "attorney-in-fact",
+            "authorised"
+          ]
+        }
+      }
+    },
+    "owners": {
+      "type": "array",
+      "description": "Array of owners",
+      "items": {
+        "$ref": "#/$defs/owner"
+      }
+    },
+    "portfolio_alternative_investments": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "alternative-investments"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_funds"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_bonds": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "bonds"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_bonds"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_common": {
+      "type": "object",
+      "description": "Portfolio container. The fields available in composition depend on the subtype.",
+      "required": [
+        "subtype",
+        "uuid",
+        "code",
+        "name",
+        "currency",
+        "total_value",
+        "weighted_return",
+        "annualized_volatility",
+        "yield",
+        "contributions",
+        "withholdings",
+        "owners",
+        "composition",
+        "transactions"
+      ],
+      "properties": {
+        "subtype": {
+          "type": "string",
+          "description": "Portfolio subtype. Determines which keys may appear in composition items.",
+          "enum": [
+            "funds",
+            "stocks",
+            "pension-plans",
+            "bonds",
+            "alternative-investments",
+            "crypto"
+          ]
+        },
+        "uuid": {
+          "type": "string",
+          "description": "Unique identifier, in relation to the user, assigned by Wealth Reader"
+        },
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "total_value": {
+          "type": "number"
+        },
+        "weighted_return": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "annualized_volatility": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "The value will be 0 when the entity does not provide it"
+        },
+        "yield": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "contributions": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "withholdings": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "contracting_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "linked_account": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "IBAN code without spaces. The value will be null when the entity does not provide it"
+        },
+        "portfolio_statement": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "byte",
+          "description": "Base64-encoded PDF statement for the portfolio (when provided by the entity)"
+        },
+        "owners": {
+          "$ref": "#/$defs/owners"
+        },
+        "composition": {
+          "type": "array",
+          "description": "Positions that make up the portfolio. The item schema depends on subtype."
+        },
+        "transactions": {
+          "$ref": "#/$defs/portfolio_transactions"
+        }
+      }
+    },
+    "portfolio_composition_bonds": {
+      "type": "array",
+      "description": "Composition for subtype=bonds",
+      "items": {
+        "$ref": "#/$defs/portfolio_composition_bonds_item"
+      }
+    },
+    "portfolio_composition_bonds_item": {
+      "type": "object",
+      "properties": {
+        "ISIN": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument ISIN"
+        },
+        "ISIN_description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument description"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency in ISO 4217 coding"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Market price"
+        },
+        "shares": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Quantity / nominal"
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Total nominal value / total amount"
+        },
+        "interest_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Coupon rate"
+        },
+        "issue_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date",
+          "description": "Issue date"
+        },
+        "due_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date",
+          "description": "Maturity date"
+        },
+        "risk_rating": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Credit rating"
+        },
+        "effective_yield": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Effective yield"
+        },
+        "immediate_yield": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Immediate yield"
+        },
+        "reference_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When currency differs from reference_currency, indicates the reference currency used for conversion"
+        },
+        "exchange_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Exchange rate applied from currency to reference_currency"
+        }
+      }
+    },
+    "portfolio_composition_crypto": {
+      "type": "array",
+      "description": "Composition for subtype=crypto",
+      "items": {
+        "$ref": "#/$defs/portfolio_composition_crypto_item"
+      }
+    },
+    "portfolio_composition_crypto_item": {
+      "type": "object",
+      "properties": {
+        "ticker": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Crypto asset ticker/symbol"
+        },
+        "value_time": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "Valuation timestamp (when provided by the entity)"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Asset description"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency in ISO 4217 coding"
+        },
+        "weighting": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Weight with respect to the rest of the portfolio composition"
+        },
+        "shares": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Quantity held"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Current price"
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Total amount"
+        },
+        "reference_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When currency differs from reference_currency, indicates the reference currency used for conversion"
+        },
+        "exchange_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Exchange rate applied from currency to reference_currency"
+        }
+      }
+    },
+    "portfolio_composition_funds": {
+      "type": "array",
+      "description": "Composition for subtype=funds (and alternative-investments)",
+      "items": {
+        "$ref": "#/$defs/portfolio_composition_funds_item"
+      }
+    },
+    "portfolio_composition_funds_item": {
+      "type": "object",
+      "properties": {
+        "ISIN": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument ISIN"
+        },
+        "ISIN_description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument description"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency in ISO 4217 coding"
+        },
+        "weighting": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Weight with respect to the rest of the portfolio composition"
+        },
+        "shares": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Shares"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Current price"
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Total amount"
+        },
+        "reference_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When currency differs from reference_currency, indicates the reference currency used for conversion"
+        },
+        "exchange_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Exchange rate applied from currency to reference_currency"
+        }
+      }
+    },
+    "portfolio_composition_pension_plans": {
+      "type": "array",
+      "description": "Composition for subtype=pension-plans",
+      "items": {
+        "$ref": "#/$defs/portfolio_composition_pension_plans_item"
+      }
+    },
+    "portfolio_composition_pension_plans_item": {
+      "type": "object",
+      "properties": {
+        "DGS": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Pension plan identifier (entity-specific)"
+        },
+        "DGS_description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Pension plan description"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency in ISO 4217 coding"
+        },
+        "weighting": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Weight with respect to the rest of the portfolio composition"
+        },
+        "shares": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Shares"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Current price"
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Total amount"
+        },
+        "reference_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When currency differs from reference_currency, indicates the reference currency used for conversion"
+        },
+        "exchange_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Exchange rate applied from currency to reference_currency"
+        }
+      }
+    },
+    "portfolio_composition_stocks": {
+      "type": "array",
+      "description": "Composition for subtype=stocks",
+      "items": {
+        "$ref": "#/$defs/portfolio_composition_stocks_item"
+      }
+    },
+    "portfolio_composition_stocks_item": {
+      "type": "object",
+      "properties": {
+        "ISIN": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument ISIN"
+        },
+        "ISIN_description": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Instrument description"
+        },
+        "MIC": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Market Identifier Code (ISO 10383)"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency in ISO 4217 coding"
+        },
+        "weighting": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Weight with respect to the rest of the portfolio composition"
+        },
+        "shares": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Shares"
+        },
+        "price": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Current price"
+        },
+        "total_amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Total amount"
+        },
+        "reference_currency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "When currency differs from reference_currency, indicates the reference currency used for conversion"
+        },
+        "exchange_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Exchange rate applied from currency to reference_currency"
+        }
+      }
+    },
+    "portfolio_crypto": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "crypto"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_crypto"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_funds": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "funds"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_funds"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_pension_plans": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "pension-plans"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_pension_plans"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_stocks": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/portfolio_common"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "subtype": {
+              "type": "string",
+              "enum": [
+                "stocks"
+              ]
+            },
+            "composition": {
+              "$ref": "#/$defs/portfolio_composition_stocks"
+            }
+          }
+        }
+      ]
+    },
+    "portfolio_transaction": {
+      "type": "object",
+      "required": [
+        "uuid",
+        "value_date",
+        "operation_type",
+        "shares",
+        "price",
+        "total_amount",
+        "currency"
+      ],
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "description": "Unique identifier, in relation to the portfolio uuid, assigned by Wealth Reader"
+        },
+        "operation_pending": {
+          "type": "boolean",
+          "description": "Indicates whether the operation is pending execution or not."
+        },
+        "operation_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date"
+        },
+        "value_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "operation_type": {
+          "type": "string",
+          "enum": [
+            "purchase",
+            "sale",
+            "subscription by transfer",
+            "redemption by transfer",
+            "scrip dividend",
+            "capital increase",
+            "equity rights",
+            "equity fee",
+            "equity adjustment"
+          ]
+        },
+        "shares": {
+          "type": "number"
+        },
+        "price": {
+          "type": "number"
+        },
+        "total_amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "It is always an absolute value. The sign is defined by operation_type"
+        },
+        "currency": {
+          "type": "string",
+          "description": "Original currency of the transaction."
+        },
+        "reference_currency": {
+          "type": "string",
+          "description": "Portfolio currency. This field is only included when it differs from currency."
+        },
+        "exchange_rate": {
+          "type": "number",
+          "description": "Exchange rate between currency and reference_currency. This field is only included when reference_currency differs from currency."
+        }
+      }
+    },
+    "portfolio_transactions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/portfolio_transaction"
+      }
+    },
+    "portfolios": {
+      "type": "array",
+      "description": "Investment portfolios. Item schema depends on subtype.",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/portfolio_funds"
+          },
+          {
+            "$ref": "#/$defs/portfolio_stocks"
+          },
+          {
+            "$ref": "#/$defs/portfolio_pension_plans"
+          },
+          {
+            "$ref": "#/$defs/portfolio_bonds"
+          },
+          {
+            "$ref": "#/$defs/portfolio_alternative_investments"
+          },
+          {
+            "$ref": "#/$defs/portfolio_crypto"
+          }
+        ]
+      }
+    },
+    "properties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Real estate assets",
+        "required": [
+          "uuid",
+          "code",
+          "currency",
+          "trading_price",
+          "trading_year",
+          "historic_prices"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "code": {
+            "description": "Cadastral reference",
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "trading_price": {
+            "type": "number",
+            "description": "Trading price of the property"
+          },
+          "trading_year": {
+            "type": "number",
+            "description": "Year of the trade"
+          },
+          "historic_prices": {
+            "type": "array",
+            "description": "Historical prices of the property",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "description": "Date of the price valuation"
+                },
+                "price": {
+                  "type": "number",
+                  "description": "Valuation price"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Direct debit receipts",
+        "required": [
+          "last_receipt_date",
+          "issuer",
+          "description",
+          "account",
+          "status",
+          "amount",
+          "pdf_file"
+        ],
+        "properties": {
+          "last_receipt_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "account": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "paid",
+              "pending",
+              "overdue"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "pdf_file": {
+            "type": "string",
+            "description": "PDF file encoded in Base64"
+          },
+          "pdf_file_settled": {
+            "type": "boolean",
+            "description": "Indicates whether the PDF file generated by the bank is final (true) or provisional (false). Some banks generate a PDF with less information on the transaction day and later provide the final version."
+          }
+        }
+      }
+    },
+    "statistics": {
+      "type": "object",
+      "required": [
+        "SESSION",
+        "execution_time"
+      ],
+      "properties": {
+        "SESSION": {
+          "type": "string",
+          "description": "Always save this value, whether the connection is correct or not. It is necessary to obtain support"
+        },
+        "execution_time": {
+          "type": "number",
+          "description": "Duration of execution"
+        },
+        "warnings": {
+          "type": "array",
+          "description": "Indicates warnings, not problems, found during information extraction. It is relevant to store them to improve support",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "format": "unsigned",
+                "description": "You can get the complete list in the error-codes method."
+              },
+              "message": {
+                "type": "string",
+                "description": "Text describing the warning"
+              },
+              "product_type": {
+                "type": "string",
+                "enum": [
+                  "user_information",
+                  "accounts",
+                  "portfolios",
+                  "cards",
+                  "receipts",
+                  "loans",
+                  "deposits",
+                  "leases",
+                  "insurances",
+                  "factoring",
+                  "confirming",
+                  "properties",
+                  "invoices",
+                  "files",
+                  "contracts",
+                  "unknown"
+                ],
+                "description": "When retrieving what type of product the warning has been generated for"
+              }
+            }
+          }
+        },
+        "operation_id": {
+          "type": "string",
+          "description": "The value will be indicated when the API has been invoked through the Widget provided by Wealth Reader. To learn more about this type of integration, visit: https://docs-en.wealthreader.com/"
+        },
+        "token": {
+          "type": "string",
+          "description": "The value is indicated when credentials are tokenized for the first time"
+        }
+      }
+    },
+    "user_information": {
+      "type": "object",
+      "description": "Information related to the person logging in",
+      "required": [
+        "ID",
+        "name"
+      ],
+      "properties": {
+        "ID": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female"
+          ]
+        },
+        "birth_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "birth_place": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "cell_phone": {
+          "type": "string",
+          "description": "Phone number with international prefix, without spaces"
+        },
+        "address": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "postal_code": {
+          "type": "string"
+        },
+        "marital_status": {
+          "type": "string",
+          "enum": [
+            "single",
+            "married"
+          ]
+        },
+        "job": {
+          "type": "string",
+          "description": "The value here varies greatly from one entity to another: from indicating only if it is self-employment or employment to indicating the type of profession"
+        }
+      }
+    }
+  }
+}

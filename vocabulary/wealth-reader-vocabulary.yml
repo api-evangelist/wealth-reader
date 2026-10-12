@@ -1,0 +1,214 @@
+generated: '2026-10-12'
+method: derived
+generator: derive-vocabulary.py
+source:
+- openapi/wealth-reader-advanced-api-openapi.yml
+- openapi/wealth-reader-cards-real-time-api-openapi.yml
+- openapi/wealth-reader-core-api-openapi.yml
+vocabulary:
+  name: Wealth Reader Domain Vocabulary
+  description: 'Terms declared by Wealth Reader''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-12'
+  terms:
+  - term: Advanced
+    definition: Optional endpoints not required for standard integrations. Use only if explicitly instructed by Wealth Reader.
+    tags:
+    - Resource Group
+    source: openapi/wealth-reader-advanced-api-openapi.yml
+  - term: Cards (real time)
+    definition: 'Real-time card expense synchronization from the Open Sync mobile app: per-customer employee pre-registration, signed webhooks
+      (card_transaction.created / card_enrollment.confirmed), and REST query / backfill.'
+    tags:
+    - Resource Group
+    source: openapi/wealth-reader-cards-real-time-api-openapi.yml
+  - term: Core
+    definition: Core API required for standard integrations
+    tags:
+    - Resource Group
+    source: openapi/wealth-reader-core-api-openapi.yml
+  - term: entities
+    definition: 'Object declared by the contract with fields: code, name, logo, color, inputs, statistics.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/entities
+  - term: error
+    definition: 'Object declared by the contract with fields: success, error, statistics.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/error
+  - term: portfolio_composition_funds
+    definition: Composition for subtype=funds (and alternative-investments)
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_funds
+  - term: portfolio_composition_pension_plans
+    definition: Composition for subtype=pension-plans
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_pension_plans
+  - term: portfolio_composition_stocks_item
+    definition: 'Object declared by the contract with fields: ISIN, ISIN_description, MIC, currency, weighting, shares, price, total_amount, reference_currency,
+      exchange_rate.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_stocks_item
+  - term: portfolio_composition_bonds_item
+    definition: 'Object declared by the contract with fields: ISIN, ISIN_description, currency, price, shares, total_amount, interest_rate, issue_date,
+      due_date, risk_rating, effective_yield, immediate_yield. (2 more)'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_bonds_item
+  - term: portfolio_composition_crypto
+    definition: Composition for subtype=crypto
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_crypto
+  - term: user_information
+    definition: Information related to the person logging in
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/user_information
+  - term: portfolio_composition_bonds
+    definition: Composition for subtype=bonds
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_bonds
+  - term: batch-connection
+    definition: Structure of each connection in the array - accepts all parameters from the /entities/ method Must always send credential_id +
+      code + (token OR credentials)
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/batch-connection
+  - term: revoke-user-response
+    definition: 'Object declared by the contract with fields: success, message.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/revoke-user-response
+  - term: error-detail
+    definition: 'Object declared by the contract with fields: code, message.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/error-detail
+  - term: employment
+    definition: Employment history / work life and contributions
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/employment
+  - term: portfolio_composition_funds_item
+    definition: 'Object declared by the contract with fields: ISIN, ISIN_description, currency, weighting, shares, price, total_amount, reference_currency,
+      exchange_rate.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_funds_item
+  - term: portfolio_common
+    definition: Portfolio container. The fields available in composition depend on the subtype.
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_common
+  - term: register-user-response
+    definition: 'Object declared by the contract with fields: success, message.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/register-user-response
+  - term: statistics
+    definition: 'Object declared by the contract with fields: SESSION, execution_time, warnings, operation_id, token.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/statistics
+  - term: entity-data
+    definition: 'Object declared by the contract with fields: success, payload, statistics.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/entity-data
+  - term: owner
+    definition: 'Object declared by the contract with fields: ID, name, role.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/owner
+  - term: portfolio_composition_pension_plans_item
+    definition: 'Object declared by the contract with fields: DGS, DGS_description, currency, weighting, shares, price, total_amount, reference_currency,
+      exchange_rate.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_pension_plans_item
+  - term: portfolio_composition_stocks
+    definition: Composition for subtype=stocks
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_stocks
+  - term: lease_installment
+    definition: 'Object declared by the contract with fields: uuid, date, status, currency, total, breakdown, value_date, receipt_uuid, additional_info.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/lease_installment
+  - term: owners
+    definition: Array of owners
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/owners
+  - term: register-user-request
+    definition: 'Object declared by the contract with fields: api_key, user_id, service, email.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/register-user-request
+  - term: portfolio_transaction
+    definition: 'Object declared by the contract with fields: uuid, operation_pending, operation_date, value_date, operation_type, shares, price,
+      total_amount, currency, reference_currency, exchange_rate.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_transaction
+  - term: check-user-response
+    definition: 'Object declared by the contract with fields: success, registered, user_id, links.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/check-user-response
+  - term: error-response
+    definition: 'Object declared by the contract with fields: success, message.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/error-response
+  - term: revoke-user-request
+    definition: 'Object declared by the contract with fields: api_key, user_id, service.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/revoke-user-request
+  - term: portfolios
+    definition: Investment portfolios. Item schema depends on subtype.
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolios
+  - term: check-user-request
+    definition: 'Object declared by the contract with fields: api_key, user_id.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/check-user-request
+  - term: portfolio_composition_crypto_item
+    definition: 'Object declared by the contract with fields: ticker, value_time, description, currency, weighting, shares, price, total_amount,
+      reference_currency, exchange_rate.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/portfolio_composition_crypto_item
+  - term: cards-transaction
+    definition: Real-time card transaction object. Same format returned by GET /cards/transactions/ and sent in the card_transaction.created webhook.
+    tags:
+    - Object
+    source: openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-transaction
+  - term: cards-webhook-delivery
+    definition: 'Body sent by Wealthreader to the webhook_url of the customer (POST /cards/webhook/) for the card_transaction.created and card_enrollment.confirmed
+      events. Headers: Content-Type: application/json, User-Agent: Wealthreader-Cards/1.0, Origin: https://api.wealthreader.com, X-WR-Event: ,
+      X-WR-Delivery: , X-WR-Signature: sha256=. The customer must verify X-WR-Signature with a constant-time comparison (h'
+    tags:
+    - Object
+    source: openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-webhook-delivery
+  - term: cards-enrollment-response
+    definition: 'Object declared by the contract with fields: success, payload.'
+    tags:
+    - Object
+    source: openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-enrollment-response
+  - term: cards-enrollment
+    definition: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed
+      webhook.
+    tags:
+    - Object
+    source: openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-enrollment

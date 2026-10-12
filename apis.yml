@@ -1,8 +1,11 @@
 name: Wealth Reader
-description: 'Read-only bank aggregation API: accounts, transactions, cards, loans, deposits and investment
-  portfolios from banks, brokers and asset managers in 61 countries, over both the PSD2 regulatory channel
-  and a non-PSD2 channel that returns wealth data the regulatory APIs do not expose.'
+
+description: 'Read-only bank aggregation API: accounts, transactions, cards, loans, deposits and investment portfolios from banks, brokers and
+  asset managers in 61 countries, over both the PSD2 regulatory channel and a non-PSD2 channel that returns wealth data the regulatory APIs do
+  not expose.'
+
 url: https://raw.githubusercontent.com/api-evangelist/wealth-reader/refs/heads/main/apis.yml
+
 deliveryModel:
   model: saas
   license_evidence:
@@ -19,9 +22,13 @@ deliveryModel:
   - repository-not-product
   generated: '2026-09-25'
   method: derived
+
 created: '2026-08-24'
+
 modified: '2026-10-06'
+
 specificationVersion: '0.23'
+
 tags:
 - Bank Aggregation
 - Open Banking
@@ -33,107 +40,40 @@ tags:
 - Banking
 - Fintech
 - Data Aggregation
-apis:
-- aid: wealth-reader:wealth-reader-advanced-api
-  name: Wealth Reader Advanced API
-  description: Optional endpoints not required for standard integrations. Use only if explicitly instructed
-    by Wealth Reader.
-  humanURL: https://www.wealthreader.com/docs/en/introduction/
-  baseURL: https://api.wealthreader.com/
-  tags:
-  - Advanced
-  properties:
-  - type: OpenAPI
-    url: openapi/wealth-reader-advanced-api-openapi.yml
-  - type: Documentation
-    url: https://www.wealthreader.com/docs/en/introduction/
-  - type: InteractiveDocumentation
-    url: https://www.wealthreader.com/api-reference/en/
-  - type: Postman
-    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
-  - type: Repository
-    url: https://github.com/Wealth-Reader/wealthreader-api-docs
-  - type: LLMsTxt
-    url: https://www.wealthreader.com/llms.txt
-  - type: Pricing
-    url: https://www.wealthreader.com/en/pricing/
-  - type: SupportedInstitutions
-    url: https://api.wealthreader.com/entities/
-  - type: ErrorCodes
-    url: https://api.wealthreader.com/error-codes/
-  - type: Support
-    url: https://help.wealthreader.com/
-  - type: Authentication
-    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
-- aid: wealth-reader:wealth-reader-cards-real-time-api
-  name: Wealth Reader Cards (real time) API
-  description: 'Real-time card expense synchronization from the Open Sync mobile app: per-customer employee
-    pre-registration, signed webhooks (card_transaction.created / card_enrollment.confirmed), and REST
-    query / backfill.'
-  humanURL: https://www.wealthreader.com/docs/en/introduction/
-  baseURL: https://api.wealthreader.com/
-  tags:
-  - Cards (real time)
-  properties:
-  - type: OpenAPI
-    url: openapi/wealth-reader-cards-real-time-api-openapi.yml
-  - type: Documentation
-    url: https://www.wealthreader.com/docs/en/introduction/
-  - type: InteractiveDocumentation
-    url: https://www.wealthreader.com/api-reference/en/
-  - type: Postman
-    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
-  - type: Repository
-    url: https://github.com/Wealth-Reader/wealthreader-api-docs
-  - type: LLMsTxt
-    url: https://www.wealthreader.com/llms.txt
-  - type: Pricing
-    url: https://www.wealthreader.com/en/pricing/
-  - type: SupportedInstitutions
-    url: https://api.wealthreader.com/entities/
-  - type: ErrorCodes
-    url: https://api.wealthreader.com/error-codes/
-  - type: Support
-    url: https://help.wealthreader.com/
-  - type: Authentication
-    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
-- aid: wealth-reader:wealth-reader-core-api
-  name: Wealth Reader Core API
-  description: Core API required for standard integrations
-  humanURL: https://www.wealthreader.com/docs/en/introduction/
-  baseURL: https://api.wealthreader.com/
-  tags:
-  - Core
-  properties:
-  - type: OpenAPI
-    url: openapi/wealth-reader-core-api-openapi.yml
-  - type: Documentation
-    url: https://www.wealthreader.com/docs/en/introduction/
-  - type: InteractiveDocumentation
-    url: https://www.wealthreader.com/api-reference/en/
-  - type: Postman
-    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
-  - type: Repository
-    url: https://github.com/Wealth-Reader/wealthreader-api-docs
-  - type: LLMsTxt
-    url: https://www.wealthreader.com/llms.txt
-  - type: Pricing
-    url: https://www.wealthreader.com/en/pricing/
-  - type: SupportedInstitutions
-    url: https://api.wealthreader.com/entities/
-  - type: ErrorCodes
-    url: https://api.wealthreader.com/error-codes/
-  - type: Support
-    url: https://help.wealthreader.com/
-  - type: Authentication
-    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
+
 maintainers:
 - FN: Wealth Reader S.L.
   email: support@wealthreader.com
   url: https://www.wealthreader.com/
   X-linkedin: https://www.linkedin.com/company/wealthreader/
+
 image: https://www.wealthreader.com/i/wealthreader.svg
+
+x-source:
+  apis_json: https://www.wealthreader.com/apis.json
+  fetched: '2026-09-03'
+  via: api-search/inbox#13, submitted by the provider
+  note: Merged from the descriptor the provider serves on their own domain. Only the self url was re-pointed at this record.
+
 common:
+- type: AgenticAccess
+  url: agentic-access/wealth-reader-agentic-access.yml
+- type: Spectral
+  url: rules/wealth-reader-rules.yml
+- type: JSONLD
+  url: json-ld/wealth-reader-context.jsonld
+- type: Vocabulary
+  url: vocabulary/wealth-reader-vocabulary.yml
+- type: Deprecation
+  url: lifecycle/wealth-reader-lifecycle.yml
+- type: Hosts
+  url: hosts/wealth-reader-hosts.yml
+- type: Vendors
+  url: vendors/wealth-reader-vendors.yml
+- type: SDKs
+  url: packages/wealth-reader-packages.yml
+- type: Newsroom
+  url: https://www.wealthreader.com/en/about-wealth-reader/press/
 - url: https://blog.wealthreader.com/feed/
   type: BlogRSS
 - type: Website
@@ -186,8 +126,6 @@ common:
   url: plans/wealth-reader-plans-pricing.yml
 - type: Lifecycle
   url: lifecycle/wealth-reader-lifecycle.yml
-- type: ChangeLog
-  url: changelog/wealth-reader-changelog.yml
 - type: Conformance
   url: conformance/wealth-reader-conformance.yml
 - type: Compliance
@@ -214,14 +152,123 @@ common:
   url: asyncapi/wealth-reader-webhooks.yml
 - type: AgentSkill
   url: skills/_index.yml
-x-source:
-  apis_json: https://www.wealthreader.com/apis.json
-  fetched: '2026-09-03'
-  via: api-search/inbox#13, submitted by the provider
-  note: Merged from the descriptor the provider serves on their own domain. Only the self url was re-pointed
-    at this record.
+
+apis:
+- aid: wealth-reader:wealth-reader-advanced-api
+  name: Wealth Reader Advanced API
+  description: Optional endpoints not required for standard integrations. Use only if explicitly instructed by Wealth Reader.
+  humanURL: https://www.wealthreader.com/docs/en/introduction/
+  baseURL: https://api.wealthreader.com/
+  tags:
+  - Advanced
+  properties:
+  - type: OpenAPI
+    url: openapi/wealth-reader-advanced-api-openapi.yml
+  - type: Documentation
+    url: https://www.wealthreader.com/docs/en/introduction/
+  - type: InteractiveDocumentation
+    url: https://www.wealthreader.com/api-reference/en/
+  - type: Postman
+    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
+  - type: Repository
+    url: https://github.com/Wealth-Reader/wealthreader-api-docs
+  - type: LLMsTxt
+    url: https://www.wealthreader.com/llms.txt
+  - type: Pricing
+    url: https://www.wealthreader.com/en/pricing/
+  - type: SupportedInstitutions
+    url: https://api.wealthreader.com/entities/
+  - type: ErrorCodes
+    url: https://api.wealthreader.com/error-codes/
+  - type: Support
+    url: https://help.wealthreader.com/
+  - type: Authentication
+    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
+  - type: JSONSchema
+    url: json-schema/wealth-reader-batch-connection-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-statistics-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-entities-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-entity-data-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-register-user-request-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-check-user-response-schema.json
+- aid: wealth-reader:wealth-reader-cards-real-time-api
+  name: Wealth Reader Cards (real time) API
+  description: 'Real-time card expense synchronization from the Open Sync mobile app: per-customer employee pre-registration, signed webhooks
+    (card_transaction.created / card_enrollment.confirmed), and REST query / backfill.'
+  humanURL: https://www.wealthreader.com/docs/en/introduction/
+  baseURL: https://api.wealthreader.com/
+  tags:
+  - Cards (real time)
+  properties:
+  - type: OpenAPI
+    url: openapi/wealth-reader-cards-real-time-api-openapi.yml
+  - type: Documentation
+    url: https://www.wealthreader.com/docs/en/introduction/
+  - type: InteractiveDocumentation
+    url: https://www.wealthreader.com/api-reference/en/
+  - type: Postman
+    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
+  - type: Repository
+    url: https://github.com/Wealth-Reader/wealthreader-api-docs
+  - type: LLMsTxt
+    url: https://www.wealthreader.com/llms.txt
+  - type: Pricing
+    url: https://www.wealthreader.com/en/pricing/
+  - type: SupportedInstitutions
+    url: https://api.wealthreader.com/entities/
+  - type: ErrorCodes
+    url: https://api.wealthreader.com/error-codes/
+  - type: Support
+    url: https://help.wealthreader.com/
+  - type: Authentication
+    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
+  - type: JSONSchema
+    url: json-schema/wealth-reader-cards-transaction-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-cards-enrollment-response-schema.json
+- aid: wealth-reader:wealth-reader-core-api
+  name: Wealth Reader Core API
+  description: Core API required for standard integrations
+  humanURL: https://www.wealthreader.com/docs/en/introduction/
+  baseURL: https://api.wealthreader.com/
+  tags:
+  - Core
+  properties:
+  - type: OpenAPI
+    url: openapi/wealth-reader-core-api-openapi.yml
+  - type: Documentation
+    url: https://www.wealthreader.com/docs/en/introduction/
+  - type: InteractiveDocumentation
+    url: https://www.wealthreader.com/api-reference/en/
+  - type: Postman
+    url: https://www.postman.com/wealtreader/wealth-reader-api-definition/overview
+  - type: Repository
+    url: https://github.com/Wealth-Reader/wealthreader-api-docs
+  - type: LLMsTxt
+    url: https://www.wealthreader.com/llms.txt
+  - type: Pricing
+    url: https://www.wealthreader.com/en/pricing/
+  - type: SupportedInstitutions
+    url: https://api.wealthreader.com/entities/
+  - type: ErrorCodes
+    url: https://api.wealthreader.com/error-codes/
+  - type: Support
+    url: https://help.wealthreader.com/
+  - type: Authentication
+    url: https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend/
+  - type: JSONSchema
+    url: json-schema/wealth-reader-entity-data-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-warning-error-codes-schema.json
+  - type: JSONSchema
+    url: json-schema/wealth-reader-category-types-schema.json
 x-enrichment:
-  date: '2026-09-03'
+  date: '2026-10-12'
   status: enriched
-  artifacts_added: 28
-  pass: local-v1
+  artifacts_added: 1
+  pass: local-v5

@@ -6,13 +6,14 @@ Use this file to discover the public documentation. Prefer the Markdown and YAML
 
 ## Integration guide (Markdown)
 
-Spanish is the source of truth. Every page is also published as raw Markdown so you can ingest it without rendering.
+Spanish is the source of truth. Every published language variant is also available as raw Markdown so you can ingest it without rendering.
 
 - [Introduction](https://www.wealthreader.com/docs/en/introduction.md): iframe vs OAuth, prerequisites
 - [Flow](https://www.wealthreader.com/docs/en/flow.md): sequence and error paths
 - [Iframe frontend](https://www.wealthreader.com/docs/en/iframe-integration-1-of-2-frontend.md): `wr_conf`, postMessage
 - [Iframe backend](https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend.md): callback payload and mock users
 - [OAuth backend](https://www.wealthreader.com/docs/en/oauth-integration-backend.md): PKCE challenge and token exchange
+- [AI coding assistants](https://www.wealthreader.com/docs/en/ai-coding-assistants.md): install the Agent Skill for Claude Code, Codex, Cursor, Copilot, Gemini CLI and other SKILL.md assistants
 - [Support](https://www.wealthreader.com/docs/en/support.md)
 
 Spanish originals:
@@ -22,9 +23,30 @@ Spanish originals:
 - https://www.wealthreader.com/docs/es/integracion-via-iframe-1-de-2-frontend.md
 - https://www.wealthreader.com/docs/es/integracion-via-iframe-2-de-2-backend.md
 - https://www.wealthreader.com/docs/es/integracion-via-oauth-backend.md
+- https://www.wealthreader.com/docs/es/asistentes-de-ia.md
 - https://www.wealthreader.com/docs/es/soporte.md
 
-HTML versions live at the same path without `.md`. All 17 languages are listed in [llms-full.txt](https://www.wealthreader.com/llms-full.txt).
+Payments (provisional, sandbox by default; selected languages below, full language coverage in llms-full.txt):
+
+- https://www.wealthreader.com/docs/en/payments-introduction.md
+- https://www.wealthreader.com/docs/en/payments-integration-widget.md
+- https://www.wealthreader.com/docs/en/payments-intents-idempotency.md
+- https://www.wealthreader.com/docs/en/payments-statuses-reconciliation.md
+- https://www.wealthreader.com/docs/en/payments-security-testing.md
+
+- https://www.wealthreader.com/docs/es/pagos-introduccion.md
+- https://www.wealthreader.com/docs/es/pagos-integracion-widget.md
+- https://www.wealthreader.com/docs/es/pagos-intenciones-e-idempotencia.md
+- https://www.wealthreader.com/docs/es/pagos-estados-y-conciliacion.md
+- https://www.wealthreader.com/docs/es/pagos-seguridad-y-pruebas.md
+
+- https://www.wealthreader.com/docs/fr/paiements-introduction.md
+- https://www.wealthreader.com/docs/fr/paiements-integration-widget.md
+- https://www.wealthreader.com/docs/fr/paiements-intentions-idempotence.md
+- https://www.wealthreader.com/docs/fr/paiements-etats-rapprochement.md
+- https://www.wealthreader.com/docs/fr/paiements-securite-tests.md
+
+HTML versions live at the same path without `.md`. Pages restricted with `published_languages` are intentionally absent from other locales. All published variants are listed in [llms-full.txt](https://www.wealthreader.com/llms-full.txt).
 
 ## API
 

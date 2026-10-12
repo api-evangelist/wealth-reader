@@ -1,0 +1,454 @@
+{
+  "@context": {
+    "@vocab": "https://wealthreader.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "wealth": "https://wealthreader.com/schema#",
+    "entities": "wealth:entities",
+    "code": {
+      "@id": "wealth:code",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "wealth:name",
+      "@type": "xsd:string"
+    },
+    "logo": {
+      "@id": "wealth:logo",
+      "@type": "xsd:string"
+    },
+    "color": {
+      "@id": "wealth:color",
+      "@type": "xsd:string"
+    },
+    "inputs": {
+      "@id": "wealth:inputs"
+    },
+    "statistics": {
+      "@id": "wealth:statistics",
+      "@type": "@id"
+    },
+    "error": "wealth:error",
+    "success": {
+      "@id": "wealth:success",
+      "@type": "xsd:boolean"
+    },
+    "portfolio_composition_stocks_item": "wealth:portfolio_composition_stocks_item",
+    "ISIN": {
+      "@id": "wealth:ISIN",
+      "@type": "xsd:string"
+    },
+    "ISIN_description": {
+      "@id": "wealth:ISIN_description",
+      "@type": "xsd:string"
+    },
+    "MIC": {
+      "@id": "wealth:MIC",
+      "@type": "xsd:string"
+    },
+    "currency": {
+      "@id": "wealth:currency",
+      "@type": "xsd:string"
+    },
+    "weighting": {
+      "@id": "wealth:weighting",
+      "@type": "xsd:decimal"
+    },
+    "shares": {
+      "@id": "wealth:shares",
+      "@type": "xsd:decimal"
+    },
+    "price": {
+      "@id": "wealth:price",
+      "@type": "xsd:decimal"
+    },
+    "total_amount": {
+      "@id": "wealth:total_amount",
+      "@type": "xsd:decimal"
+    },
+    "reference_currency": {
+      "@id": "wealth:reference_currency",
+      "@type": "xsd:string"
+    },
+    "exchange_rate": {
+      "@id": "wealth:exchange_rate",
+      "@type": "xsd:decimal"
+    },
+    "portfolio_composition_bonds_item": "wealth:portfolio_composition_bonds_item",
+    "interest_rate": {
+      "@id": "wealth:interest_rate",
+      "@type": "xsd:decimal"
+    },
+    "issue_date": {
+      "@id": "wealth:issue_date",
+      "@type": "xsd:date"
+    },
+    "due_date": {
+      "@id": "wealth:due_date",
+      "@type": "xsd:date"
+    },
+    "risk_rating": {
+      "@id": "wealth:risk_rating",
+      "@type": "xsd:string"
+    },
+    "effective_yield": {
+      "@id": "wealth:effective_yield",
+      "@type": "xsd:decimal"
+    },
+    "immediate_yield": {
+      "@id": "wealth:immediate_yield",
+      "@type": "xsd:decimal"
+    },
+    "user_information": "wealth:user_information",
+    "ID": {
+      "@id": "wealth:ID",
+      "@type": "xsd:string"
+    },
+    "gender": {
+      "@id": "wealth:gender",
+      "@type": "xsd:string"
+    },
+    "birth_date": {
+      "@id": "wealth:birth_date",
+      "@type": "xsd:date"
+    },
+    "birth_place": {
+      "@id": "wealth:birth_place",
+      "@type": "xsd:string"
+    },
+    "email": {
+      "@id": "wealth:email",
+      "@type": "xsd:string"
+    },
+    "cell_phone": {
+      "@id": "wealth:cell_phone",
+      "@type": "xsd:string"
+    },
+    "address": {
+      "@id": "wealth:address",
+      "@type": "xsd:string"
+    },
+    "city": {
+      "@id": "wealth:city",
+      "@type": "xsd:string"
+    },
+    "country": {
+      "@id": "wealth:country",
+      "@type": "xsd:string"
+    },
+    "postal_code": {
+      "@id": "wealth:postal_code",
+      "@type": "xsd:string"
+    },
+    "marital_status": {
+      "@id": "wealth:marital_status",
+      "@type": "xsd:string"
+    },
+    "job": {
+      "@id": "wealth:job",
+      "@type": "xsd:string"
+    },
+    "batch-connection": "wealth:batch-connection",
+    "credential_id": {
+      "@id": "wealth:credential_id",
+      "@type": "xsd:string"
+    },
+    "token": {
+      "@id": "wealth:token",
+      "@type": "xsd:string"
+    },
+    "user": {
+      "@id": "wealth:user",
+      "@type": "xsd:string"
+    },
+    "password": {
+      "@id": "wealth:password",
+      "@type": "xsd:string"
+    },
+    "product_types": {
+      "@id": "wealth:product_types",
+      "@type": "xsd:string"
+    },
+    "only_balances": {
+      "@id": "wealth:only_balances",
+      "@type": "xsd:boolean"
+    },
+    "date_from": {
+      "@id": "wealth:date_from",
+      "@type": "xsd:date"
+    },
+    "date_to": {
+      "@id": "wealth:date_to",
+      "@type": "xsd:date"
+    },
+    "required_products_schema": {
+      "@id": "wealth:required_products_schema",
+      "@type": "xsd:string"
+    },
+    "add_pdf_from_uuids": {
+      "@id": "wealth:add_pdf_from_uuids",
+      "@type": "xsd:string"
+    },
+    "force_historic_transactions": {
+      "@id": "wealth:force_historic_transactions",
+      "@type": "xsd:boolean"
+    },
+    "second_password": {
+      "@id": "wealth:second_password",
+      "@type": "xsd:string"
+    },
+    "third_password": {
+      "@id": "wealth:third_password",
+      "@type": "xsd:string"
+    },
+    "contract_name": {
+      "@id": "wealth:contract_name",
+      "@type": "xsd:string"
+    },
+    "revoke-user-response": "wealth:revoke-user-response",
+    "message": {
+      "@id": "wealth:message",
+      "@type": "xsd:string"
+    },
+    "error-detail": "wealth:error-detail",
+    "employment": "wealth:employment",
+    "summary": {
+      "@id": "wealth:summary"
+    },
+    "periods": {
+      "@id": "wealth:periods",
+      "@container": "@list"
+    },
+    "portfolio_composition_funds_item": "wealth:portfolio_composition_funds_item",
+    "portfolio_common": "wealth:portfolio_common",
+    "subtype": {
+      "@id": "wealth:subtype",
+      "@type": "xsd:string"
+    },
+    "uuid": {
+      "@id": "wealth:uuid",
+      "@type": "xsd:string"
+    },
+    "total_value": {
+      "@id": "wealth:total_value",
+      "@type": "xsd:decimal"
+    },
+    "weighted_return": {
+      "@id": "wealth:weighted_return",
+      "@type": "xsd:decimal"
+    },
+    "annualized_volatility": {
+      "@id": "wealth:annualized_volatility",
+      "@type": "xsd:decimal"
+    },
+    "yield": {
+      "@id": "wealth:yield",
+      "@type": "xsd:decimal"
+    },
+    "contributions": {
+      "@id": "wealth:contributions",
+      "@type": "xsd:decimal"
+    },
+    "withholdings": {
+      "@id": "wealth:withholdings",
+      "@type": "xsd:decimal"
+    },
+    "contracting_date": {
+      "@id": "wealth:contracting_date",
+      "@type": "xsd:date"
+    },
+    "linked_account": {
+      "@id": "wealth:linked_account",
+      "@type": "xsd:string"
+    },
+    "portfolio_statement": {
+      "@id": "wealth:portfolio_statement",
+      "@type": "xsd:string"
+    },
+    "owners": {
+      "@id": "wealth:owners",
+      "@type": "@id"
+    },
+    "composition": {
+      "@id": "wealth:composition",
+      "@container": "@list"
+    },
+    "transactions": {
+      "@id": "wealth:transactions",
+      "@type": "@id"
+    },
+    "register-user-response": "wealth:register-user-response",
+    "entity-data": "wealth:entity-data",
+    "payload": {
+      "@id": "wealth:payload"
+    },
+    "owner": "wealth:owner",
+    "role": {
+      "@id": "wealth:role",
+      "@type": "xsd:string"
+    },
+    "portfolio_composition_pension_plans_item": "wealth:portfolio_composition_pension_plans_item",
+    "DGS": {
+      "@id": "wealth:DGS",
+      "@type": "xsd:string"
+    },
+    "DGS_description": {
+      "@id": "wealth:DGS_description",
+      "@type": "xsd:string"
+    },
+    "lease_installment": "wealth:lease_installment",
+    "date": {
+      "@id": "wealth:date",
+      "@type": "xsd:date"
+    },
+    "status": {
+      "@id": "wealth:status",
+      "@type": "xsd:string"
+    },
+    "total": {
+      "@id": "wealth:total",
+      "@type": "xsd:decimal"
+    },
+    "breakdown": {
+      "@id": "wealth:breakdown"
+    },
+    "value_date": {
+      "@id": "wealth:value_date",
+      "@type": "xsd:date"
+    },
+    "receipt_uuid": {
+      "@id": "wealth:receipt_uuid",
+      "@type": "xsd:string"
+    },
+    "additional_info": {
+      "@id": "wealth:additional_info",
+      "@type": "@id"
+    },
+    "register-user-request": "wealth:register-user-request",
+    "api_key": {
+      "@id": "wealth:api_key",
+      "@type": "xsd:string"
+    },
+    "user_id": {
+      "@id": "wealth:user_id",
+      "@type": "xsd:string"
+    },
+    "service": {
+      "@id": "wealth:service",
+      "@type": "xsd:string"
+    },
+    "portfolio_transaction": "wealth:portfolio_transaction",
+    "operation_pending": {
+      "@id": "wealth:operation_pending",
+      "@type": "xsd:boolean"
+    },
+    "operation_date": {
+      "@id": "wealth:operation_date",
+      "@type": "xsd:date"
+    },
+    "operation_type": {
+      "@id": "wealth:operation_type",
+      "@type": "xsd:string"
+    },
+    "check-user-response": "wealth:check-user-response",
+    "registered": {
+      "@id": "wealth:registered",
+      "@type": "xsd:boolean"
+    },
+    "links": {
+      "@id": "wealth:links"
+    },
+    "error-response": "wealth:error-response",
+    "revoke-user-request": "wealth:revoke-user-request",
+    "check-user-request": "wealth:check-user-request",
+    "portfolio_composition_crypto_item": "wealth:portfolio_composition_crypto_item",
+    "ticker": {
+      "@id": "wealth:ticker",
+      "@type": "xsd:string"
+    },
+    "value_time": {
+      "@id": "wealth:value_time",
+      "@type": "xsd:dateTime"
+    },
+    "description": {
+      "@id": "wealth:description",
+      "@type": "xsd:string"
+    },
+    "cards-transaction": "wealth:cards-transaction",
+    "id": {
+      "@id": "wealth:id",
+      "@type": "xsd:integer"
+    },
+    "payment_id": {
+      "@id": "wealth:payment_id",
+      "@type": "xsd:string"
+    },
+    "card_last4": {
+      "@id": "wealth:card_last4",
+      "@type": "xsd:string"
+    },
+    "entity_code": {
+      "@id": "wealth:entity_code",
+      "@type": "xsd:string"
+    },
+    "amount": {
+      "@id": "wealth:amount",
+      "@type": "xsd:decimal"
+    },
+    "merchant": {
+      "@id": "wealth:merchant",
+      "@type": "xsd:string"
+    },
+    "category": {
+      "@id": "wealth:category",
+      "@type": "xsd:string"
+    },
+    "gps": {
+      "@id": "wealth:gps"
+    },
+    "received_at": {
+      "@id": "wealth:received_at",
+      "@type": "xsd:dateTime"
+    },
+    "cards-webhook-delivery": "wealth:cards-webhook-delivery",
+    "event": {
+      "@id": "wealth:event",
+      "@type": "xsd:string"
+    },
+    "delivery_id": {
+      "@id": "wealth:delivery_id",
+      "@type": "xsd:string"
+    },
+    "sent_at": {
+      "@id": "wealth:sent_at",
+      "@type": "xsd:dateTime"
+    },
+    "data": {
+      "@id": "wealth:data"
+    },
+    "cards-enrollment-response": "wealth:cards-enrollment-response",
+    "cards-enrollment": "wealth:cards-enrollment",
+    "enrollment_id": {
+      "@id": "wealth:enrollment_id",
+      "@type": "xsd:string"
+    },
+    "expires_at": {
+      "@id": "wealth:expires_at",
+      "@type": "xsd:dateTime"
+    },
+    "confirmed_at": {
+      "@id": "wealth:confirmed_at",
+      "@type": "xsd:dateTime"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Wealth Reader API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Wealth Reader's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-12) from openapi/wealth-reader-advanced-api-openapi.yml, openapi/wealth-reader-cards-real-time-api-openapi.yml, openapi/wealth-reader-core-api-openapi.yml.",
+  "dcterms:created": "2026-10-12",
+  "dcterms:source": [
+    "openapi/wealth-reader-advanced-api-openapi.yml",
+    "openapi/wealth-reader-cards-real-time-api-openapi.yml",
+    "openapi/wealth-reader-core-api-openapi.yml"
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-cards-transaction-schema.json",
+  "title": "cards-transaction",
+  "description": "Real-time card transaction object. Same format returned by GET /cards/transactions/ and sent in the card_transaction.created webhook.",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-transaction",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "payment_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Card user uuid."
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "card_last4": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "entity_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "operation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "value_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount": {
+      "type": "number",
+      "format": "float"
+    },
+    "currency": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Always null today; the app does not send a currency."
+    },
+    "description": {
+      "type": "string"
+    },
+    "merchant": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "gps": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "lat": {
+          "type": "number",
+          "format": "float"
+        },
+        "lon": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

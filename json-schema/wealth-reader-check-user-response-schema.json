@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-check-user-response-schema.json",
+  "title": "check-user-response",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/check-user-response",
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "registered": {
+      "type": "boolean"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "links": {
+      "type": "object",
+      "description": "Collection of links to different aggregation services registered by the user.",
+      "additionalProperties": {
+        "type": "string",
+        "format": "uri"
+      }
+    }
+  }
+}

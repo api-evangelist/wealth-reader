@@ -1,0 +1,21 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/wealth-reader/integrations
+- https://n8n.io/integrations/wealth-reader/
+- https://composio.dev/toolkits/wealth-reader
+- https://monid.ai/tools/wealth-reader
+checked:
+- https://composio.dev/toolkits/wealth-reader
+- https://monid.ai/tools/wealth-reader
+- https://n8n.io/integrations/wealth-reader/
+- https://www.wealthreader.com/en/
+- https://www.wealthreader.com/en/integrations/
+- https://www.wealthreader.com/en/partners/
+- https://zapier.com/apps/wealth-reader/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
+note: Homepage (200) nav has no integrations/partners page; /en/integrations/ and /en/partners/ return 404; no iPaaS
+  listing found.

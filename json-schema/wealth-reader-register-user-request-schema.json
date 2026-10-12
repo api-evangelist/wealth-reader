@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-register-user-request-schema.json",
+  "title": "register-user-request",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/register-user-request",
+  "type": "object",
+  "required": [
+    "api_key",
+    "user_id",
+    "email",
+    "service"
+  ],
+  "properties": {
+    "api_key": {
+      "type": "string",
+      "description": "Authentication key (8 alphanumeric characters)"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User identification document."
+    },
+    "service": {
+      "type": "string",
+      "description": "Service associated with the user. Determines the data flow.",
+      "enum": [
+        "integra",
+        "easy-transfer"
+      ]
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User email, used according to service type."
+    }
+  }
+}

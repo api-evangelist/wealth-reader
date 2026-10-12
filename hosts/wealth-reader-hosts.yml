@@ -1,0 +1,90 @@
+generated: '2026-10-12'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 6
+  own: 4
+  other_domain: 0
+  platform: 2
+  roles:
+  - api
+  - collections
+  - marketing
+  - source
+  - support
+  - website
+hosts:
+- host: api.wealthreader.com
+  found_by:
+  - pointer
+  - apis[]
+  types:
+  - ErrorCodes
+  serves:
+  - api
+  registrable_domain: wealthreader.com
+  role: api
+  relation: own
+- host: blog.wealthreader.com
+  found_by:
+  - pointer
+  types:
+  - BlogRSS
+  - Blog
+  serves: []
+  registrable_domain: wealthreader.com
+  role: marketing
+  relation: own
+- host: github.com
+  found_by:
+  - pointer
+  types:
+  - GitHubOrganization
+  serves: []
+  registrable_domain: github.com
+  role: source
+  relation: platform
+- host: help.wealthreader.com
+  found_by:
+  - pointer
+  types:
+  - Support
+  serves: []
+  registrable_domain: wealthreader.com
+  role: support
+  relation: own
+- host: www.postman.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - Postman
+  serves:
+  - api-collections
+  vendor: postman
+  registrable_domain: postman.com
+  role: collections
+  relation: platform
+- host: www.wealthreader.com
+  found_by:
+  - pointer
+  - apis[]
+  - vendor-detect
+  types:
+  - Newsroom
+  - Website
+  - Documentation
+  - SignUp
+  - PrivacyPolicy
+  - DeveloperPortal
+  - APIReference
+  - GettingStarted
+  - Pricing
+  serves:
+  - docs
+  - cdn
+  vendor: cloudflare
+  registrable_domain: wealthreader.com
+  role: website
+  relation: own

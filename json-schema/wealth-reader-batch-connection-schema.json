@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-batch-connection-schema.json",
+  "title": "batch-connection",
+  "description": "Structure of each connection in the array - accepts all parameters from the /entities/ method\nMust always send credential_id + code + (token OR credentials)\n",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/batch-connection",
+  "type": "object",
+  "required": [
+    "credential_id",
+    "code"
+  ],
+  "properties": {
+    "credential_id": {
+      "type": "string",
+      "description": "Client's unique identifier for this credential"
+    },
+    "code": {
+      "type": "string",
+      "description": "Name of the entity. The complete list is available with GET /entities/"
+    },
+    "token": {
+      "type": "string",
+      "description": "Value for custodied credentials, previously tokenized through a call\nwith tokenize=true. Alternative to user/password.\n"
+    },
+    "user": {
+      "type": "string",
+      "description": "User (required if token is not sent)"
+    },
+    "password": {
+      "type": "string",
+      "description": "Password (required if token is not sent)"
+    },
+    "product_types": {
+      "type": "string",
+      "description": "List of product types from which information is to be retrieved.\nAccepts multiple values separated by commas. Default value is ALL.\n"
+    },
+    "only_balances": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indicates whether to obtain only the balances of the products\ninstead of all available information\n"
+    },
+    "date_from": {
+      "type": "string",
+      "format": "date",
+      "description": "Date from which transactions are requested, in YYYY-MM-DD format.\nMust be a date before today.\n"
+    },
+    "date_to": {
+      "type": "string",
+      "format": "date",
+      "description": "Only applies to restricting by future dates for loan and confirming products, in YYYY-MM-DD format. The date must be later than today."
+    },
+    "required_products_schema": {
+      "type": "string",
+      "description": "Required products schema. Indicates the specific accounts or cards from which data is desired, with additional per-product configurations (only_balances, add_pdf_from_uuids, date_from). Accepts a JSON string."
+    },
+    "add_pdf_from_uuids": {
+      "type": "string",
+      "description": "Accepts transaction UUIDs separated by commas. Only taken into account if product_types is ALL or includes accounts. Adds the PDF document associated with each requested bank transaction."
+    },
+    "force_historic_transactions": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, forces retrieval of the full transaction history available at the entity, ignoring the date_from filter."
+    },
+    "second_password": {
+      "type": "string",
+      "description": "Second password or security answer, required by some entities in addition to the main password."
+    },
+    "third_password": {
+      "type": "string",
+      "description": "Third credential field required by some entities (e.g. PIN, card number)."
+    },
+    "contract_name": {
+      "type": "string",
+      "description": "Contract or account alias required by some entities to identify a specific contract within a multi-contract access."
+    }
+  }
+}

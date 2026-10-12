@@ -4,9 +4,9 @@ description: Read a consenting end user's accounts, cards, loans, deposits and i
 api: Wealth Reader API
 base_url: https://api.wealthreader.com/
 operations:
-  - POST /entities/
+  - postEntities
   - getEntities
-  - GET /entities/category-types/
+  - getEntitiesCategoryTypes
 generated: '2026-09-03'
 method: generated
 source: openapi/wealth-reader-api-for-ai.yaml; https://www.wealthreader.com/docs/en/introduction.md; https://api.wealthreader.com/error-codes/?lang=en

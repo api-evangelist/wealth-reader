@@ -1,6 +1,7 @@
 generated: '2026-09-03'
 method: searched
 source: https://www.wealthreader.com/en/pricing/
+name: Wealth Reader API Plans
 docs: https://www.wealthreader.com/en/pricing/
 currency: EUR
 billing_unit: financial products read per month

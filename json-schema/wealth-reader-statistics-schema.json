@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-statistics-schema.json",
+  "title": "statistics",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-advanced-api-openapi.yml#/components/schemas/statistics",
+  "type": "object",
+  "required": [
+    "SESSION",
+    "execution_time"
+  ],
+  "properties": {
+    "SESSION": {
+      "type": "string",
+      "description": "Always save this value, whether the connection is correct or not. It is necessary to obtain support"
+    },
+    "execution_time": {
+      "type": "number",
+      "description": "Duration of execution"
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Indicates warnings, not problems, found during information extraction. It is relevant to store them to improve support",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "unsigned",
+            "description": "You can get the complete list in the error-codes method."
+          },
+          "message": {
+            "type": "string",
+            "description": "Text describing the warning"
+          },
+          "product_type": {
+            "type": "string",
+            "enum": [
+              "user_information",
+              "accounts",
+              "portfolios",
+              "cards",
+              "receipts",
+              "loans",
+              "deposits",
+              "leases",
+              "insurances",
+              "factoring",
+              "confirming",
+              "properties",
+              "invoices",
+              "files",
+              "contracts",
+              "unknown"
+            ],
+            "description": "When retrieving what type of product the warning has been generated for"
+          }
+        }
+      }
+    },
+    "operation_id": {
+      "type": "string",
+      "description": "The value will be indicated when the API has been invoked through the Widget provided by Wealth Reader. To learn more about this type of integration, visit: https://docs-en.wealthreader.com/"
+    },
+    "token": {
+      "type": "string",
+      "description": "The value is indicated when credentials are tokenized for the first time"
+    }
+  }
+}

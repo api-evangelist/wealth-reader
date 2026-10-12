@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/wealth-reader/main/json-schema/wealth-reader-cards-enrollment-response-schema.json",
+  "title": "cards-enrollment-response",
+  "x-generated": "2026-10-12",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/wealth-reader-cards-real-time-api-openapi.yml#/components/schemas/cards-enrollment-response",
+  "type": "object",
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "payload": {
+      "$ref": "#/$defs/cards-enrollment"
+    }
+  },
+  "$defs": {
+    "cards-enrollment": {
+      "type": "object",
+      "description": "Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.",
+      "properties": {
+        "enrollment_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "32 hex characters. Identifier returned by POST /cards/enrollments/."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "active",
+            "expired",
+            "error"
+          ]
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "expires_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Card user uuid once confirmed; null while it is pending."
+        }
+      }
+    }
+  }
+}

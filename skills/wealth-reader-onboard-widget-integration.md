@@ -5,7 +5,7 @@ api: Wealth Reader API
 base_url: https://api.wealthreader.com/
 operations:
   - addDomain
-  - POST /entities/
+  - postEntities
 generated: '2026-09-03'
 method: generated
 source: https://www.wealthreader.com/docs/en/iframe-integration-1-of-2-frontend.md; https://www.wealthreader.com/docs/en/iframe-integration-2-of-2-backend.md; https://www.wealthreader.com/docs/en/flow.md; openapi/wealth-reader-api-for-ai.yaml
