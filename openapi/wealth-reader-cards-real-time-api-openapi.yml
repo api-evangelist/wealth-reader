@@ -420,6 +420,93 @@ paths:
                     type: string
 components:
   schemas:
+    cards-enrollment:
+      type: object
+      description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
+      properties:
+        enrollment_id:
+          type:
+          - string
+          - 'null'
+          description: 32 hex characters. Identifier returned by POST /cards/enrollments/.
+        status:
+          type: string
+          enum:
+          - pending
+          - active
+          - expired
+          - error
+        email:
+          type: string
+          format: email
+        expires_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        confirmed_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        user_id:
+          type:
+          - string
+          - 'null'
+          description: Card user uuid once confirmed; null while it is pending.
+    cards-webhook-delivery:
+      type: object
+      description: 'Body sent by Wealthreader to the webhook_url of the customer (POST /cards/webhook/) for the card_transaction.created and card_enrollment.confirmed events. Headers: Content-Type: application/json, User-Agent: Wealthreader-Cards/1.0, Origin: https://api.wealthreader.com, X-WR-Event: <event>, X-WR-Delivery: <delivery_id>, X-WR-Signature: sha256=<hex of hmac_sha256(raw_body, webhook_secret)>. The customer must verify X-WR-Signature with a constant-time comparison (hash_equals or equivalent) before trusting the body. Success = HTTP 2xx; otherwise Wealthreader retries with backoff 1 min, 5 min, 30 min, 2 h and 24 h, resending the exact same body, and after the last failed attempt the delivery is marked failed for good. If the secret is rotated while retries are still pending, those retries are signed with the new secret.
+
+        '
+      required:
+      - event
+      - delivery_id
+      - sent_at
+      - api_key
+      - data
+      properties:
+        event:
+          type: string
+          enum:
+          - card_transaction.created
+          - card_enrollment.confirmed
+        delivery_id:
+          type: string
+          description: 32 hex characters. Matches the X-WR-Delivery header.
+        sent_at:
+          type: string
+          format: date-time
+        api_key:
+          type: string
+        data:
+          oneOf:
+          - $ref: '#/components/schemas/cards-transaction'
+          - $ref: '#/components/schemas/cards-enrollment'
+          description: cards-transaction for card_transaction.created; cards-enrollment (in active status) for card_enrollment.confirmed.
+      example:
+        event: card_transaction.created
+        delivery_id: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d
+        sent_at: '2026-07-11T14:02:12+02:00'
+        api_key: a1b2c3d4
+        data:
+          id: 217
+          payment_id: 550e8400-e29b-41d4-a716-446655440000
+          user_id: e9f4c2a1b3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7
+          email: empleado@cliente.com
+          card_last4: '1234'
+          entity_code: bbva
+          operation_date: '2026-07-11'
+          value_date: '2026-07-11'
+          amount: -57.6
+          currency: null
+          description: SAKE RESTAURANTE
+          merchant: SAKE RESTAURANTE
+          category: Other
+          gps:
+            lat: 39.4661559
+            lon: -0.3679207
+          received_at: '2026-07-11T14:02:11+02:00'
     cards-transaction:
       type: object
       description: Real-time card transaction object. Same format returned by GET /cards/transactions/ and sent in the card_transaction.created webhook.
@@ -476,59 +563,6 @@ components:
         received_at:
           type: string
           format: date-time
-    cards-webhook-delivery:
-      type: object
-      description: 'Body sent by Wealthreader to the webhook_url of the customer (POST /cards/webhook/) for the card_transaction.created and card_enrollment.confirmed events. Headers: Content-Type: application/json, User-Agent: Wealthreader-Cards/1.0, Origin: https://api.wealthreader.com, X-WR-Event: <event>, X-WR-Delivery: <delivery_id>, X-WR-Signature: sha256=<hex of hmac_sha256(raw_body, webhook_secret)>. The customer must verify X-WR-Signature with a constant-time comparison (hash_equals or equivalent) before trusting the body. Success = HTTP 2xx; otherwise Wealthreader retries with backoff 1 min, 5 min, 30 min, 2 h and 24 h, resending the exact same body, and after the last failed attempt the delivery is marked failed for good. If the secret is rotated while retries are still pending, those retries are signed with the new secret.
-
-        '
-      required:
-      - event
-      - delivery_id
-      - sent_at
-      - api_key
-      - data
-      properties:
-        event:
-          type: string
-          enum:
-          - card_transaction.created
-          - card_enrollment.confirmed
-        delivery_id:
-          type: string
-          description: 32 hex characters. Matches the X-WR-Delivery header.
-        sent_at:
-          type: string
-          format: date-time
-        api_key:
-          type: string
-        data:
-          oneOf:
-          - $ref: '#/components/schemas/cards-transaction'
-          - $ref: '#/components/schemas/cards-enrollment'
-          description: cards-transaction for card_transaction.created; cards-enrollment (in active status) for card_enrollment.confirmed.
-      example:
-        event: card_transaction.created
-        delivery_id: 1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d
-        sent_at: '2026-07-11T14:02:12+02:00'
-        api_key: a1b2c3d4
-        data:
-          id: 217
-          payment_id: 550e8400-e29b-41d4-a716-446655440000
-          user_id: e9f4c2a1b3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7
-          email: empleado@cliente.com
-          card_last4: '1234'
-          entity_code: bbva
-          operation_date: '2026-07-11'
-          value_date: '2026-07-11'
-          amount: -57.6
-          currency: null
-          description: SAKE RESTAURANTE
-          merchant: SAKE RESTAURANTE
-          category: Other
-          gps:
-            lat: 39.4661559
-            lon: -0.3679207
-          received_at: '2026-07-11T14:02:11+02:00'
     cards-enrollment-response:
       type: object
       properties:
@@ -536,37 +570,3 @@ components:
           type: boolean
         payload:
           $ref: '#/components/schemas/cards-enrollment'
-    cards-enrollment:
-      type: object
-      description: Enrollment object. Same format returned inside the payload of POST and GET /cards/enrollments/ and sent as data in the card_enrollment.confirmed webhook.
-      properties:
-        enrollment_id:
-          type:
-          - string
-          - 'null'
-          description: 32 hex characters. Identifier returned by POST /cards/enrollments/.
-        status:
-          type: string
-          enum:
-          - pending
-          - active
-          - expired
-          - error
-        email:
-          type: string
-          format: email
-        expires_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        confirmed_at:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        user_id:
-          type:
-          - string
-          - 'null'
-          description: Card user uuid once confirmed; null while it is pending.
