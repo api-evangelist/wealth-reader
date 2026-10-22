@@ -23,6 +23,8 @@ checked:
 - https://www.cnmv.es/portal/Consultas/Servicios-Financiacion-Participativa/Listado-Proveedores.aspx
 - https://www.cnmv.es/portal/Consultas/listadoentidad.aspx?id=1&tipoent=0
 - https://www.cnmv.es/portal/Consultas/listadoentidad.aspx?id=4&tipoent=0
+- https://api.apis.guru/v2/list.json
+- https://api.apis.guru/v2/providers.json
 summary: null
 marketplace_apps: []
 edges:
@@ -122,6 +124,46 @@ edges:
     detected_by: sweep-spain-cnmv-registered-entities.py
     detected: '2026-10-22'
   detected_by: sweep-spain-cnmv-registered-entities.py
+  first_seen: '2026-10-22'
+- partner_name: APIs.guru OpenAPI Directory
+  partner: apis-guru
+  partner_match: register
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: third-party
+  evidence: https://apis.guru/
+  category: API definition directory listing (OpenAPI)
+  contract_reference:
+    register: APIs.guru OpenAPI Directory
+    spec_file: null
+    standard: APIs.guru OpenAPI Directory
+    role: listed-in-directory
+    directory_provider: wealthreader.com
+    matched_domain: wealthreader.com
+    matched_by: domain
+    apis_listed: 1
+    version_count: 1
+    first_added: '2023-03-04'
+    last_updated: '2023-03-06'
+    origin_publisher_hosted: false
+    origin_hosts:
+    - api.swaggerhub.com
+    categories: []
+    own_openapi_files: 3
+    listings:
+    - key: wealthreader.com
+      title: Wealth Reader API
+      preferred: 1.0.0
+      versions: 1
+      swagger_url: https://api.apis.guru/v2/specs/wealthreader.com/1.0.0/openapi.json
+      origin_url: https://api.swaggerhub.com/apis/Wealth-Reader/api/1.0.0
+      openapi_version: 3.0.0
+    signal_note: 'participation only: a community directory listing (APIs.guru collects definitions; the provider
+      did not file them). Signals: version_count, apis_listed, origin_publisher_hosted.'
+    detected_by: sweep-openapi-directory-apis-guru.py
+    detected: '2026-10-22'
+  detected_by: sweep-openapi-directory-apis-guru.py
   first_seen: '2026-10-22'
 templates: []
 note: Homepage (200) nav has no integrations/partners page; /en/integrations/ and /en/partners/ return 404; no iPaaS
