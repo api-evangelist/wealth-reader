@@ -16,6 +16,13 @@ checked:
 - https://euclid.eba.europa.eu/register/api/filemetadata
 - https://euclid.eba.europa.eu/register/cir/search
 - https://euclid.eba.europa.eu/register/pir/search
+- https://www.bde.es/f/webbe/SGE/regis/ficheros/es/Registro_ServicioPagos.xlsx
+- https://www.bde.es/wbe/es/entidades-profesionales/supervisadas/
+- https://www.cnmv.es/portal/Consultas/BusquedaPorEntidad.aspx
+- https://www.cnmv.es/portal/Consultas/ListadoEntidad.aspx?id=2&tipoent=0
+- https://www.cnmv.es/portal/Consultas/Servicios-Financiacion-Participativa/Listado-Proveedores.aspx
+- https://www.cnmv.es/portal/Consultas/listadoentidad.aspx?id=1&tipoent=0
+- https://www.cnmv.es/portal/Consultas/listadoentidad.aspx?id=4&tipoent=0
 summary: null
 marketplace_apps: []
 edges:
@@ -87,6 +94,35 @@ edges:
       P856 not contradicting (Kin 2026-10-20 decision 2)
   detected_by: sweep-eu-psd2-payment-institutions.py
   first_seen: '2026-10-21'
+- partner_name: Banco de Espana register of payment and e-money institutions
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.bde.es/wbe/es/entidades-profesionales/supervisadas/
+  category: Spanish payment / e-money institution authorisation (Banco de Espana)
+  contract_reference:
+    register: Banco de Espana register of payment and e-money institutions
+    spec_file: null
+    standard: null
+    role: licensed-participant
+    registrations:
+    - registered_name: WEALTH READER, S.L.
+      licences:
+      - Entidad prestadora del servicio de información sobre cuentas
+      register_country: ES
+      matched_domain: wealthreader.com
+      matched_by: domain
+      register_id: BE 6939
+      lei: 959800VHW2UGR8WN5327
+    signal_note: 'participation only: a supervisory licence / authorisation; no API conformance is published by
+      this register'
+    detected_by: sweep-spain-cnmv-registered-entities.py
+    detected: '2026-10-22'
+  detected_by: sweep-spain-cnmv-registered-entities.py
+  first_seen: '2026-10-22'
 templates: []
 note: Homepage (200) nav has no integrations/partners page; /en/integrations/ and /en/partners/ return 404; no iPaaS
   listing found.
