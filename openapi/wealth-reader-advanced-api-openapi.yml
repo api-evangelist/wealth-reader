@@ -3484,3 +3484,9 @@ components:
       description: Composition for subtype=bonds
       items:
         $ref: '#/components/schemas/portfolio_composition_bonds_item'
+x-provenance:
+  method: harvested
+  publisher: Wealth Reader
+  source: https://www.wealthreader.com/api-reference/api-for-ai.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
